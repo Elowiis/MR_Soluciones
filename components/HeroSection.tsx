@@ -7,11 +7,12 @@ import { MessageCircle, ArrowRight, Sparkles } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { PropertySearch } from "@/components/PropertySearch"
 
+// Imágenes con posición personalizada para cada una
 const heroImages = [
-  '/castillo.jpg',
-  '/clubnautico.jpg',
-  '/iglesia_encina.jpg',
-  '/castillo2.jpg',
+  { src: '/castillo.jpg', position: 'object-[center_40%]' },
+  { src: '/clubnautico.jpg', position: 'object-center' },
+  { src: '/iglesia_encina.jpg', position: 'object-[center_35%]' },
+  { src: '/castillo2.jpg', position: 'object-[center_40%]' },
 ]
 
 export function HeroSection() {
@@ -44,8 +45,8 @@ export function HeroSection() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative h-[60vh] md:h-[70vh] lg:h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 pb-12 md:pb-16 overflow-hidden">
+      {/* Hero Section - Alturas responsive mejoradas */}
+      <section className="relative min-h-[100svh] h-[85vh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 pb-20 md:pb-24 overflow-hidden">
         {/* Carrusel de imágenes de fondo */}
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="wait">
@@ -58,19 +59,19 @@ export function HeroSection() {
               className="absolute inset-0"
             >
               <Image
-                src={heroImages[currentImageIndex]}
+                src={heroImages[currentImageIndex].src}
                 alt={`Imagen de fondo ${currentImageIndex + 1}`}
                 fill
                 sizes="100vw"
                 priority={currentImageIndex === 0}
-                className="object-cover object-center"
+                className={`object-cover ${heroImages[currentImageIndex].position}`}
               />
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Overlay oscuro semi-transparente */}
-        <div className="absolute inset-0 bg-black/50 z-10"></div>
+        {/* Overlay con gradiente para mejor legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10"></div>
 
         {/* Contenido del Hero */}
         <div className="relative max-w-5xl mx-auto text-center text-white z-20">
@@ -130,7 +131,7 @@ export function HeroSection() {
               size="lg"
               className="bg-white text-green-900 hover:bg-green-50 text-sm sm:text-base md:text-lg px-6 sm:px-8 py-3 sm:py-4 md:py-6 rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group w-full sm:w-auto min-h-[44px]"
             >
-              Encuentra tu propiedad ideal
+              Contrata nuestros servicios
               <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             
@@ -154,8 +155,8 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Indicadores del carrusel */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        {/* Indicadores del carrusel - con más espacio del borde */}
+        <div className="absolute bottom-12 md:bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
           {heroImages.map((_, index) => (
             <button
               key={index}
