@@ -3,7 +3,7 @@ import { BenefitsSection } from "@/components/benefits-section"
 import { FeaturedPropertiesSection } from "@/components/FeaturedPropertiesSection"
 import { TestimonialsSection } from "@/components/testimonials"
 import { HeroSection } from "@/components/HeroSection"
-import { ServicesSection } from "@/components/ServicesSection"
+
 
 export default function Home() {
   return (
