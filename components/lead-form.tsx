@@ -154,7 +154,6 @@ export function LeadForm() {
       toast({ 
         title: "⚠️ Formulario incompleto", 
         description: "Por favor, revisa los campos marcados en rojo",
-        className: "bg-red-200 border-red-400 text-gray-800"
       })
       return
     }
@@ -260,7 +259,6 @@ export function LeadForm() {
       toast({
         title: "❌ Error",
         description: "Ocurrió un error al enviar la solicitud. Por favor, intenta de nuevo.",
-        className: "bg-red-200 border-red-400 text-gray-800"
       })
     } finally {
       setLoading(false)
@@ -494,7 +492,7 @@ export function LeadForm() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Select onValueChange={(value) => handleSelectChange("presupuesto", value)}>
-                  <                SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
                   <SelectValue placeholder="💰 Presupuesto" />
                 </SelectTrigger>
                   <SelectContent>
