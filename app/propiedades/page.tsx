@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
 import { getAllProperties} from '@/sanity/lib/queries'
@@ -53,7 +53,7 @@ const zonas = [
   { value: 'molinaseca', label: 'Molinaseca' },
 ]
 
-export default function PropertiesPage() {
+function PropertiesContent() {
   const searchParams = useSearchParams()
   const [properties, setProperties] = useState<Property[]>([])
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
@@ -64,13 +64,11 @@ export default function PropertiesPage() {
   const [precioMax, setPrecioMax] = useState<string>('sin-limite')
   const [showFilters, setShowFilters] = useState(false)
 
-  // Función para formatear precio para display
   const formatPrecioDisplay = (precio: string) => {
     if (!precio || precio === 'sin-limite') return ''
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(parseInt(precio))
   }
 
-  // Leer query params al cargar la página
   useEffect(() => {
     const tipo = searchParams.get('tipo')
     const zona = searchParams.get('zona')
@@ -86,7 +84,6 @@ export default function PropertiesPage() {
     if (precioMaxParam) {
       setPrecioMax(precioMaxParam)
     }
-    // Mapear la operación del buscador (comprar/alquilar) a los valores de Sanity
     if (operacion === 'comprar') {
       setSelectedStatus('en venta')
     } else if (operacion === 'alquilar') {
@@ -113,27 +110,21 @@ export default function PropertiesPage() {
   useEffect(() => {
     let filtered = [...properties]
 
-    // Filtrar por tipo
     if (selectedType !== 'all') {
       filtered = filtered.filter((prop) => prop.propertyType === selectedType)
     }
 
-    // Filtrar por estado
     if (selectedStatus !== 'all') {
       filtered = filtered.filter((prop) => prop.status === selectedStatus)
     }
 
-    // Filtrar por zona (ubicación)
     if (selectedZona !== 'todas') {
       filtered = filtered.filter((prop) => 
         prop.location?.toLowerCase().includes(selectedZona.toLowerCase())
       )
     }
 
-    // Filtrar por precio máximo
     if (precioMax && precioMax !== 'sin-limite') {
-      // Si el valor es "300000", filtrar propiedades >= 300000
-      // Para otros valores, filtrar propiedades <= precioMax
       if (precioMax === '300000') {
         filtered = filtered.filter((prop) => prop.price >= 300000)
       } else {
@@ -160,9 +151,7 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-        {/* Header compacto con imagen de fondo */}
       <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden">
-        {/* Imagen de fondo */}
         <Image
           src="/clubnautico.jpg"
           alt="Fondo propiedades"
@@ -170,10 +159,8 @@ export default function PropertiesPage() {
           className="object-cover"
           priority
         />
-        {/* Overlay verde */}
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/85 to-emerald-800/75" />
         
-        {/* Contenido */}
         <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">
@@ -184,7 +171,6 @@ export default function PropertiesPage() {
             </p>
           </div>
           
-          {/* Logo */}
           <div className="hidden md:block">
             <div className="relative w-24 h-24 bg-white rounded-xl p-2 shadow-lg">
               <Image
@@ -199,9 +185,7 @@ export default function PropertiesPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Filtros */}
         <div className="mb-8">
-          {/* Botón toggle para móvil */}
           <div className="flex items-center justify-between mb-4 md:hidden">
             <Button
               variant="outline"
@@ -218,7 +202,6 @@ export default function PropertiesPage() {
             </Button>
           </div>
 
-          {/* Panel de filtros */}
           <div
             className={`${
               showFilters ? 'block' : 'hidden'
@@ -243,7 +226,6 @@ export default function PropertiesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Filtro por tipo */}
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Tipo de Propiedad
@@ -265,7 +247,6 @@ export default function PropertiesPage() {
                 </Select>
               </div>
 
-              {/* Filtro por estado */}
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Estado
@@ -287,7 +268,6 @@ export default function PropertiesPage() {
                 </Select>
               </div>
 
-              {/* Filtro por zonas */}
               <div>
                 <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
@@ -312,7 +292,6 @@ export default function PropertiesPage() {
             </div>
           </div>
 
-          {/* Resultados */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-muted-foreground">
               {filteredProperties.length === 1
@@ -370,7 +349,6 @@ export default function PropertiesPage() {
           </div>
         </div>
 
-        {/* Grid de propiedades */}
         <PropertyGrid
           properties={filteredProperties}
           loading={loading}
@@ -385,5 +363,13 @@ export default function PropertiesPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center">Cargando...</div>}>
+      <PropertiesContent />
+    </Suspense>
   )
 }
