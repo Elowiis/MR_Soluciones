@@ -124,7 +124,6 @@ export function PropertyAlertModal({ isOpen, onClose, searchCriteria }: Property
       toast({
         title: '❌ Error',
         description: 'Ocurrió un error al enviar la solicitud. Por favor, intenta de nuevo.',
-        className: 'bg-red-200 border-red-400 text-gray-800',
       })
     } finally {
       setLoading(false)
