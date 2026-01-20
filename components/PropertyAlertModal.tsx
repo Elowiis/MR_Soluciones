@@ -67,7 +67,6 @@ export function PropertyAlertModal({ isOpen, onClose, searchCriteria }: Property
       toast({
         title: '⚠️ Formulario incompleto',
         description: 'Por favor, completa los campos obligatorios',
-        className: 'bg-red-200 border-red-400 text-gray-800',
       })
       return
     }
