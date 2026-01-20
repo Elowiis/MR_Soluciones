@@ -19,6 +19,7 @@ type ToasterToast = Toast & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  className?: string
 }
 
 const actionTypes = {
