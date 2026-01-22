@@ -298,13 +298,14 @@ export function LeadForm() {
     <AnimatePresence>
       {error && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="flex items-center gap-1.5 mt-1.5 text-red-600"
+          exit={{ opacity: 0, y: -5 }}
+          transition={{ duration: 0.2 }}
+          className="flex items-center gap-1 sm:gap-1.5 mt-1 sm:mt-1.5 text-red-600"
         >
-          <AlertCircle className="w-4 h-4" />
-          <span className="text-sm font-medium">{error}</span>
+          <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="text-xs sm:text-sm font-medium">{error}</span>
         </motion.div>
       )}
     </AnimatePresence>
@@ -314,27 +315,27 @@ export function LeadForm() {
     <motion.form 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
       onSubmit={handleSubmit} 
-      className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-3xl mx-auto border border-gray-100"
+      className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-3xl mx-2 sm:mx-auto border border-gray-100"
     >
       {/* Header */}
-      <div className="text-center mb-6 sm:mb-8">
+      <div className="text-center mb-4 sm:mb-6 md:mb-8">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring" }}
-          className="inline-block rounded-2xl mb-3 sm:mb-4 overflow-hidden shadow-lg"
+          transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+          className="inline-block rounded-xl sm:rounded-2xl mb-2 sm:mb-3 md:mb-4 overflow-hidden shadow-lg"
         >
           <Image
             src="/logo.jpg"
             alt="MR Soluciones Inmobiliarias"
             width={80}
             height={80}
-            className="object-contain w-16 h-16 sm:w-20 sm:h-20"
+            className="object-contain w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20"
           />
         </motion.div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
           Cuéntanos sobre tu interés inmobiliario
         </h2>
         <p className="text-sm sm:text-base text-gray-600">Completa el formulario y te contactaremos pronto</p>
@@ -344,10 +345,10 @@ export function LeadForm() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="space-y-4 mb-6"
+        transition={{ delay: 0.2 }}
+        className="space-y-3 sm:space-y-4 md:space-y-6 mb-4 sm:mb-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {/* Nombre */}
           <div className={errors.nombre ? "error-field" : ""}>
             <div className="relative">
@@ -356,13 +357,13 @@ export function LeadForm() {
                 placeholder="Nombre completo *"
                 value={formData.nombre}
                 onChange={handleInputChange}
-                className={`pl-10 h-11 sm:h-12 transition-all text-sm sm:text-base ${
+                className={`pl-10 pr-3 h-11 transition-all text-sm placeholder:text-sm ${
                   errors.nombre 
                     ? "border-red-500 border-2 bg-red-50 focus:border-red-500 focus:ring-red-500" 
                     : "border-gray-300 focus:border-green-500 focus:ring-green-500"
                 }`}
               />
-              <Home className={`absolute left-3 top-3 sm:top-3.5 w-4 h-4 sm:w-5 sm:h-5 ${errors.nombre ? "text-red-500" : "text-gray-400"}`} />
+              <Home className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.nombre ? "text-red-500" : "text-gray-400"}`} />
             </div>
             <ErrorMessage error={errors.nombre} />
           </div>
@@ -376,13 +377,13 @@ export function LeadForm() {
                 placeholder="Email *"
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`pl-10 h-11 sm:h-12 transition-all text-sm sm:text-base ${
+                className={`pl-10 pr-3 h-11 transition-all text-sm placeholder:text-sm ${
                   errors.email 
                     ? "border-red-500 border-2 bg-red-50 focus:border-red-500 focus:ring-red-500" 
                     : "border-gray-300 focus:border-green-500 focus:ring-green-500"
                 }`}
               />
-              <FileText className={`absolute left-3 top-3 sm:top-3.5 w-4 h-4 sm:w-5 sm:h-5 ${errors.email ? "text-red-500" : "text-gray-400"}`} />
+              <FileText className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.email ? "text-red-500" : "text-gray-400"}`} />
             </div>
             <ErrorMessage error={errors.email} />
           </div>
@@ -396,13 +397,13 @@ export function LeadForm() {
               placeholder="+34 600 000 000 *"
               value={formData.whatsapp}
               onChange={handleInputChange}
-              className={`pl-10 h-11 sm:h-12 transition-all text-sm sm:text-base ${
+              className={`pl-10 pr-3 h-11 transition-all text-sm placeholder:text-sm ${
                 errors.whatsapp 
                   ? "border-red-500 border-2 bg-red-50 focus:border-red-500 focus:ring-red-500" 
                   : "border-gray-300 focus:border-green-500 focus:ring-green-500"
               }`}
             />
-            <span className={`absolute left-3 top-3 sm:top-3.5 text-base sm:text-lg ${errors.whatsapp ? "text-red-500" : "text-gray-400"}`}>📱</span>
+            <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-base ${errors.whatsapp ? "text-red-500" : "text-gray-400"}`}>📱</span>
           </div>
           <ErrorMessage error={errors.whatsapp} />
         </div>
@@ -412,10 +413,10 @@ export function LeadForm() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="mb-8"
+        transition={{ delay: 0.3 }}
+        className="mb-6 sm:mb-8"
       >
-        <label className="block text-base sm:text-lg font-semibold mb-4 text-gray-800">
+        <label className="block text-sm sm:text-base md:text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
           ¿Qué te interesa? *
         </label>
         
@@ -426,28 +427,28 @@ export function LeadForm() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700"
+              className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700"
             >
-              <AlertCircle className="w-5 h-5" />
-              <span className="font-medium">{errors.leadType}</span>
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium">{errors.leadType}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
           {leadTypes.map(({ type, icon: Icon, color, bgColor, borderColor }) => (
             <motion.button
               key={type}
               type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => {
                 setLeadType(type)
                 if (errors.leadType) {
                   setErrors((prev) => ({ ...prev, leadType: "" }))
                 }
               }}
-                className={`relative p-4 sm:p-6 rounded-xl border-2 transition-all min-h-[44px] ${
+                className={`relative p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl border-2 transition-all min-h-[44px] flex flex-col items-center justify-center ${
                 leadType === type
                   ? `${borderColor} ${bgColor} shadow-lg`
                   : errors.leadType
@@ -455,18 +456,18 @@ export function LeadForm() {
                     : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >
-              <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${color} mb-3`}>
-                <Icon className="w-6 h-6 text-white" />
+              <div className={`inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-br ${color} mb-2 sm:mb-3`}>
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div className="font-semibold text-gray-900">{type}</div>
+              <div className="font-semibold text-sm sm:text-base text-gray-900">{type}</div>
               
               {leadType === type && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1"
+                  className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-green-500 rounded-full p-0.5 sm:p-1"
                 >
-                  <CheckCircle2 className="w-5 h-5 text-white" />
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </motion.div>
               )}
             </motion.button>
@@ -485,14 +486,14 @@ export function LeadForm() {
             transition={{ duration: 0.3 }}
             className="mb-6 overflow-hidden"
           >
-            <div className="p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-              <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
+            <div className="p-3 sm:p-4 md:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg sm:rounded-xl border border-blue-200">
+              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2">
                 <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                 Información del comprador
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                 <Select onValueChange={(value) => handleSelectChange("presupuesto", value)}>
-                <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                   <SelectValue placeholder="💰 Presupuesto" />
                 </SelectTrigger>
                   <SelectContent>
@@ -506,7 +507,7 @@ export function LeadForm() {
                 </Select>
 
                 <Select onValueChange={(value) => handleSelectChange("zona", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="📍 Zona preferida" />
                   </SelectTrigger>
                   <SelectContent>
@@ -535,14 +536,14 @@ export function LeadForm() {
                         placeholder="📍 Indica la zona que te interesa"
                         value={formData.zonaOtra}
                         onChange={handleInputChange}
-                        className="h-11 sm:h-12 bg-white border-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                        className="h-10 sm:h-11 md:h-12 bg-white border-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm px-3"
                       />
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <Select onValueChange={(value) => handleSelectChange("tipoPropiedad", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="🏠 Tipo de propiedad" />
                   </SelectTrigger>
                   <SelectContent>
@@ -565,7 +566,7 @@ export function LeadForm() {
                       transition={{ duration: 0.2 }}
                     >
                       <Select onValueChange={(value) => handleSelectChange("habitaciones", value)}>
-                        <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                        <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                           <SelectValue placeholder="🛏️ Habitaciones" />
                         </SelectTrigger>
                         <SelectContent>
@@ -589,7 +590,7 @@ export function LeadForm() {
                       transition={{ duration: 0.2 }}
                     >
                       <Select onValueChange={(value) => handleSelectChange("banos", value)}>
-                        <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                        <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                           <SelectValue placeholder="🚿 Baños" />
                         </SelectTrigger>
                         <SelectContent>
@@ -604,7 +605,7 @@ export function LeadForm() {
 
                 <div className={mostrarHabitacionesComprador ? "" : "md:col-span-2"}>
                   <Select onValueChange={(value) => handleSelectChange("urgencia", value)}>
-                    <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                    <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                       <SelectValue placeholder="⏰ ¿Cuándo necesitas la propiedad?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -628,14 +629,14 @@ export function LeadForm() {
             transition={{ duration: 0.3 }}
             className="mb-6 overflow-hidden"
           >
-            <div className="p-4 sm:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-              <h3 className="text-base sm:text-lg font-semibold text-green-900 mb-4 flex items-center gap-2">
+            <div className="p-3 sm:p-4 md:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg sm:rounded-xl border border-green-200">
+              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-green-900 mb-3 sm:mb-4 flex items-center gap-2">
                 <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
                 Información de la propiedad a vender
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                 <Select onValueChange={(value) => handleSelectChange("zonaPropiedad", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="📍 Zona de la propiedad" />
                   </SelectTrigger>
                   <SelectContent>
@@ -651,7 +652,7 @@ export function LeadForm() {
                 </Select>
 
                 <Select onValueChange={(value) => handleSelectChange("tipoVenta", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="🏠 Tipo de propiedad" />
                   </SelectTrigger>
                   <SelectContent>
@@ -678,7 +679,7 @@ export function LeadForm() {
                         placeholder="📍 Indica la zona de tu propiedad"
                         value={formData.zonaPropiedadOtra}
                         onChange={handleInputChange}
-                        className="h-12 bg-white border-green-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        className="h-10 sm:h-11 md:h-12 bg-white border-green-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm px-3"
                       />
                     </motion.div>
                   )}
@@ -690,7 +691,7 @@ export function LeadForm() {
                   placeholder="📐 Metros cuadrados"
                   value={formData.metrosCuadrados}
                   onChange={handleInputChange}
-                  className="h-11 sm:h-12 bg-white border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm sm:text-base"
+                  className="h-10 sm:h-11 md:h-12 bg-white border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm px-3"
                 />
 
                 {/* Habitaciones - Solo si aplica */}
@@ -703,7 +704,7 @@ export function LeadForm() {
                       transition={{ duration: 0.2 }}
                     >
                       <Select onValueChange={(value) => handleSelectChange("habitacionesVenta", value)}>
-                        <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                        <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                           <SelectValue placeholder="🛏️ Habitaciones" />
                         </SelectTrigger>
                         <SelectContent>
@@ -728,7 +729,7 @@ export function LeadForm() {
                       transition={{ duration: 0.2 }}
                     >
                       <Select onValueChange={(value) => handleSelectChange("banosVenta", value)}>
-                        <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                        <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                           <SelectValue placeholder="🚿 Baños" />
                         </SelectTrigger>
                         <SelectContent>
@@ -742,7 +743,7 @@ export function LeadForm() {
                 </AnimatePresence>
 
                 <Select onValueChange={(value) => handleSelectChange("precioEsperado", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="💰 Precio esperado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -755,7 +756,7 @@ export function LeadForm() {
                 </Select>
 
                 <Select onValueChange={(value) => handleSelectChange("documentosRegla", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="📄 ¿Documentos al día?" />
                   </SelectTrigger>
                   <SelectContent>
@@ -767,7 +768,7 @@ export function LeadForm() {
 
                 <div className="md:col-span-2">
                   <Select onValueChange={(value) => handleSelectChange("urgenciaVenta", value)}>
-                    <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                    <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                       <SelectValue placeholder="⏰ ¿Cuándo necesitas vender?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -791,14 +792,14 @@ export function LeadForm() {
             transition={{ duration: 0.3 }}
             className="mb-6 overflow-hidden"
           >
-            <div className="p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
-              <h3 className="text-base sm:text-lg font-semibold text-purple-900 mb-4 flex items-center gap-2">
+            <div className="p-3 sm:p-4 md:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg sm:rounded-xl border border-purple-200">
+              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-purple-900 mb-3 sm:mb-4 flex items-center gap-2">
                 <KeyRound className="w-4 h-4 sm:w-5 sm:h-5" />
                 Información de alquiler
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                 <Select onValueChange={(value) => handleSelectChange("tipoAlquiler", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="🔄 ¿Qué necesitas?" />
                   </SelectTrigger>
                   <SelectContent>
@@ -808,7 +809,7 @@ export function LeadForm() {
                 </Select>
 
                 <Select onValueChange={(value) => handleSelectChange("zonaAlquiler", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="📍 Zona" />
                   </SelectTrigger>
                   <SelectContent>
@@ -837,14 +838,14 @@ export function LeadForm() {
                         placeholder="📍 Indica la zona"
                         value={formData.zonaAlquilerOtra}
                         onChange={handleInputChange}
-                        className="h-11 sm:h-12 bg-white border-purple-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"
+                        className="h-10 sm:h-11 md:h-12 bg-white border-purple-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm px-3"
                       />
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <Select onValueChange={(value) => handleSelectChange("tipoPropiedadAlquiler", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="🏠 Tipo de propiedad" />
                   </SelectTrigger>
                   <SelectContent>
@@ -856,7 +857,7 @@ export function LeadForm() {
                 </Select>
 
                 <Select onValueChange={(value) => handleSelectChange("presupuestoAlquiler", value)}>
-                  <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                  <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                     <SelectValue placeholder="💰 Presupuesto mensual" />
                   </SelectTrigger>
                   <SelectContent>
@@ -869,7 +870,7 @@ export function LeadForm() {
 
                 <div className="md:col-span-2">
                   <Select onValueChange={(value) => handleSelectChange("urgenciaAlquiler", value)}>
-                    <SelectTrigger className="bg-white h-11 sm:h-12 text-sm sm:text-base min-h-[44px]">
+                    <SelectTrigger className="bg-white h-10 sm:h-11 md:h-12 text-sm min-h-[40px] sm:min-h-[44px]">
                       <SelectValue placeholder="⏰ ¿Cuándo lo necesitas?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -889,15 +890,16 @@ export function LeadForm() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.4 }}
+        className="mb-4 sm:mb-6"
       >
         <textarea
           name="mensaje"
           placeholder="💬 Cuéntanos más detalles (opcional)"
           value={formData.mensaje}
           onChange={handleInputChange}
-          className="w-full border border-gray-300 rounded-xl px-4 py-3 mb-4 text-sm sm:text-base text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
-          rows={4}
+          className="w-full border border-gray-300 rounded-lg sm:rounded-xl px-3 py-3 sm:px-4 sm:py-3 text-sm text-gray-700 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
+          rows={3}
         />
       </motion.div>
 
@@ -905,11 +907,11 @@ export function LeadForm() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="mb-6"
+        transition={{ delay: 0.5 }}
+        className="mb-4 sm:mb-6"
       >
         <label 
-          className={`flex items-start gap-3 cursor-pointer group p-3 rounded-lg transition-all ${
+          className={`flex items-start gap-2 sm:gap-3 cursor-pointer group p-2 sm:p-3 rounded-lg transition-all ${
             errors.aceptaTerminos ? "bg-red-50 border border-red-200" : ""
           }`}
         >
@@ -923,13 +925,13 @@ export function LeadForm() {
                 setErrors((prev) => ({ ...prev, aceptaTerminos: "" }))
               }
             }}
-            className={`w-5 h-5 mt-0.5 rounded cursor-pointer ${
+            className={`w-4 h-4 sm:w-5 sm:h-5 mt-0.5 rounded cursor-pointer flex-shrink-0 ${
               errors.aceptaTerminos 
                 ? "border-red-500 text-red-600 focus:ring-red-500" 
                 : "border-gray-300 text-green-600 focus:ring-green-500"
             }`}
           />
-          <span className={`text-sm group-hover:text-gray-900 transition-colors ${
+          <span className={`text-xs sm:text-sm group-hover:text-gray-900 transition-colors leading-relaxed ${
             errors.aceptaTerminos ? "text-red-700" : "text-gray-600"
           }`}>
             Acepto los{" "}
@@ -946,22 +948,22 @@ export function LeadForm() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.6 }}
       >
         <Button 
           type="submit" 
           disabled={loading}
-          className="w-full h-12 sm:h-14 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          className="w-full h-12 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-base font-semibold rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
               Enviando...
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">
               Enviar Solicitud
-              <CheckCircle2 className="w-5 h-5" />
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </span>
           )}
         </Button>
