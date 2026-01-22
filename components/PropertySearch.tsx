@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -49,6 +49,7 @@ export function PropertySearch() {
   const [tipo, setTipo] = useState<string>('all')
   const [zona, setZona] = useState<string>('todas')
   const [precioMax, setPrecioMax] = useState<string>('sin-limite')
+  const [showMoreFilters, setShowMoreFilters] = useState(false)
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -79,9 +80,9 @@ export function PropertySearch() {
   return (
     <div className="w-full max-w-5xl mx-auto px-2">
       {/* Contenedor principal del buscador */}
-      <div className="bg-white rounded-3xl shadow-2xl shadow-black/10 p-2 md:p-3">
-        {/* Header del buscador */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
+      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/10 p-2 md:p-3">
+        {/* Header del buscador - Oculto en móvil para ahorrar espacio */}
+        <div className="hidden sm:flex items-center gap-2 px-4 py-3 border-b border-gray-100">
           <div className="p-2 bg-green-100 rounded-xl">
             <Search className="w-4 h-4 text-green-600" />
           </div>
@@ -94,7 +95,115 @@ export function PropertySearch() {
 
         {/* Campos de búsqueda */}
         <div className="p-2 md:p-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3 items-stretch">
+          {/* Vista móvil: Solo Operación + Ubicación + Botón Buscar */}
+          <div className="block sm:hidden space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              {/* Operación */}
+              <div className="bg-gray-100 rounded-lg p-2 hover:bg-gray-200/70 transition-colors">
+                <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Operación
+                </label>
+                <Select value={operacion} onValueChange={setOperacion}>
+                  <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="comprar">Comprar</SelectItem>
+                    <SelectItem value="alquilar">Alquilar</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Ubicación */}
+              <div className="bg-gray-100 rounded-lg p-2 hover:bg-gray-200/70 transition-colors">
+                <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Ubicación
+                </label>
+                <Select value={zona} onValueChange={setZona}>
+                  <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
+                    <SelectValue placeholder="Todas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {zonas.map((zona) => (
+                      <SelectItem key={zona.value} value={zona.value}>
+                        {zona.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Botón Más Filtros */}
+            <Button
+              onClick={() => setShowMoreFilters(!showMoreFilters)}
+              variant="outline"
+              className="w-full h-9 text-xs border-gray-300 rounded-lg"
+            >
+              <SlidersHorizontal className="w-3 h-3 mr-2" />
+              {showMoreFilters ? 'Ocultar filtros' : 'Más filtros'}
+              {showMoreFilters ? (
+                <ChevronUp className="w-3 h-3 ml-2" />
+              ) : (
+                <ChevronDown className="w-3 h-3 ml-2" />
+              )}
+            </Button>
+
+            {/* Filtros adicionales colapsables */}
+            {showMoreFilters && (
+              <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-top-2 duration-200">
+                {/* Tipo */}
+                <div className="bg-gray-100 rounded-lg p-2 hover:bg-gray-200/70 transition-colors">
+                  <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Tipo
+                  </label>
+                  <Select value={tipo} onValueChange={setTipo}>
+                    <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tiposPropiedad.map((tipo) => (
+                        <SelectItem key={tipo.value} value={tipo.value}>
+                          {tipo.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Precio */}
+                <div className="bg-gray-100 rounded-lg p-2 hover:bg-gray-200/70 transition-colors">
+                  <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Precio máx.
+                  </label>
+                  <Select value={precioMax} onValueChange={setPrecioMax}>
+                    <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
+                      <SelectValue placeholder="Sin límite" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {precios.map((precio) => (
+                        <SelectItem key={precio.value} value={precio.value}>
+                          {precio.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            {/* Botón Buscar - Full width en móvil */}
+            <Button
+              onClick={handleSearch}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-lg text-sm shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/30 transition-all duration-300 h-10"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Buscar
+            </Button>
+          </div>
+
+          {/* Vista desktop/tablet: Todos los campos visibles */}
+          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3 items-stretch">
             
             {/* Operación */}
             <div className="bg-gray-100 rounded-xl p-3 hover:bg-gray-200/70 transition-colors">

@@ -46,7 +46,7 @@ export function HeroSection() {
   return (
     <>
       {/* Hero Section - Alturas responsive mejoradas */}
-      <section className="relative min-h-[100svh] h-[85vh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 pb-20 md:pb-24 overflow-hidden">
+      <section className="relative min-h-[100svh] h-[100svh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-20 md:pb-24 overflow-hidden">
         {/* Carrusel de imágenes de fondo */}
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="wait">
@@ -74,16 +74,16 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10"></div>
 
         {/* Contenido del Hero */}
-        <div className="relative max-w-5xl mx-auto text-center text-white z-20">
+        <div className="relative max-w-5xl mx-auto text-center text-white z-20 w-full flex flex-col items-center justify-center gap-3 sm:gap-4 md:gap-6">
           {/* Badge animado */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-8"
+            className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4 sm:mb-6 md:mb-8"
           >
-            <Sparkles className="w-4 h-4 text-yellow-300" />
-            <span className="text-sm font-medium">Tu hogar, nuestra misión</span>
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+            <span className="text-xs sm:text-sm font-medium">Tu hogar, nuestra misión</span>
           </motion.div>
 
           {/* Título principal con animación */}
@@ -91,7 +91,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 md:mb-6 text-balance leading-tight px-2"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-6 text-balance leading-tight px-2"
           >
             Encuentra tu{" "}
             <span className="bg-gradient-to-r from-green-200 via-emerald-200 to-green-300 bg-clip-text text-transparent">
@@ -104,7 +104,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-balance opacity-90 max-w-3xl mx-auto leading-relaxed px-2"
+            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-4 sm:mb-6 md:mb-8 text-balance opacity-90 max-w-3xl mx-auto leading-relaxed px-2"
           >
             Conectamos compradores, vendedores e inversores con las mejores oportunidades inmobiliarias
           </motion.p>
@@ -114,7 +114,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mb-6 md:mb-8 px-2"
+            className="mb-4 sm:mb-6 md:mb-8 px-2 w-full"
           >
             <PropertySearch />
           </motion.div>
@@ -124,22 +124,22 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4"
+            className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center items-center w-full px-4 max-w-md sm:max-w-none mx-auto"
           >
             <Button
               onClick={scrollToForm}
               size="lg"
-              className="bg-white text-green-900 hover:bg-green-50 text-sm sm:text-base md:text-lg px-6 sm:px-8 py-3 sm:py-4 md:py-6 rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group w-full sm:w-auto min-h-[44px]"
+              className="bg-white text-green-900 hover:bg-green-50 text-xs sm:text-sm md:text-base lg:text-lg px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 lg:py-6 rounded-lg sm:rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group w-full sm:w-auto min-h-[40px] sm:min-h-[44px]"
             >
               Contrata nuestros servicios
-              <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-2 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             
             <Button
               onClick={scrollToProperties}
               size="lg"
               variant="outline"
-              className="bg-transparent border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 text-sm sm:text-base md:text-lg px-6 sm:px-8 py-3 sm:py-4 md:py-6 rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 w-full sm:w-auto min-h-[44px]"
+              className="bg-transparent border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 text-xs sm:text-sm md:text-base lg:text-lg px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 lg:py-6 rounded-lg sm:rounded-xl font-semibold backdrop-blur-sm transition-all duration-300 w-full sm:w-auto min-h-[40px] sm:min-h-[44px]"
             >
               Conoce nuestras propiedades
             </Button>
@@ -155,16 +155,16 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Indicadores del carrusel - con más espacio del borde */}
-        <div className="absolute bottom-12 md:bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        {/* Indicadores del carrusel - posicionados más arriba en móvil */}
+        <div className="absolute bottom-20 sm:bottom-16 md:bottom-12 lg:bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 sm:gap-2">
           {heroImages.map((_, index) => (
             <button
               key={index}
               onClick={() => goToImage(index)}
               className={`transition-all duration-300 rounded-full ${
                 index === currentImageIndex
-                  ? 'w-3 h-3 bg-white'
-                  : 'w-2 h-2 bg-white/50 hover:bg-white/75'
+                  ? 'w-2 h-2 sm:w-3 sm:h-3 bg-white'
+                  : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/50 hover:bg-white/75'
               }`}
               aria-label={`Ir a imagen ${index + 1}`}
             />
