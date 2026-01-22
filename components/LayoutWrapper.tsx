@@ -16,13 +16,14 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     pathname === "/studio" || pathname?.startsWith("/studio/");
 
   if (isStudioRoute) {
+    
     return <>{children}</>;
   }
 
   return (
     <>
       <Navbar />
-      <main className="pt-16 md:pt-20">{children}</main>
+      <main className="w-full min-w-full pt-16 md:pt-20">{children}</main>
       <Footer />
     </>
   );

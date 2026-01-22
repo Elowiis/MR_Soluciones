@@ -46,7 +46,7 @@ export function HeroSection() {
   return (
     <>
       {/* Hero Section - Alturas responsive mejoradas */}
-      <section className="relative min-h-[100svh] h-[100svh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-20 md:pb-24 overflow-hidden">
+      <section className="relative min-h-[100svh] h-[100svh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-20 md:pb-24 overflow-hidden">
         {/* Carrusel de imágenes de fondo */}
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="wait">
@@ -74,13 +74,13 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10"></div>
 
         {/* Contenido del Hero */}
-        <div className="relative max-w-5xl mx-auto text-center text-white z-20 w-full flex flex-col items-center justify-center gap-3 sm:gap-4 md:gap-6">
-          {/* Badge animado */}
+        <div className="relative max-w-5xl mx-auto text-center text-white z-20 w-full flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4">
+          {/* Badge animado - con margen superior extra para no cortarse */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4 sm:mb-6 md:mb-8"
+            className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-2 sm:mb-4 md:mb-6"
           >
             <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
             <span className="text-xs sm:text-sm font-medium">Tu hogar, nuestra misión</span>
@@ -91,7 +91,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-6 text-balance leading-tight px-2"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-2 sm:mb-3 md:mb-4 text-balance leading-tight px-2"
           >
             Encuentra tu{" "}
             <span className="bg-gradient-to-r from-green-200 via-emerald-200 to-green-300 bg-clip-text text-transparent">
@@ -104,7 +104,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-4 sm:mb-6 md:mb-8 text-balance opacity-90 max-w-3xl mx-auto leading-relaxed px-2"
+            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-3 sm:mb-5 md:mb-6 text-balance opacity-90 max-w-3xl mx-auto leading-relaxed px-2"
           >
             Conectamos compradores, vendedores e inversores con las mejores oportunidades inmobiliarias
           </motion.p>
@@ -114,7 +114,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mb-4 sm:mb-6 md:mb-8 px-2 w-full"
+            className="mb-3 sm:mb-5 md:mb-6 px-2 w-full"
           >
             <PropertySearch />
           </motion.div>
@@ -150,7 +150,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-8 mt-8 sm:mt-12 md:mt-16 max-w-2xl mx-auto px-4"
+            className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-8 mt-6 sm:mt-10 md:mt-12 max-w-2xl mx-auto px-4"
           >
           </motion.div>
         </div>

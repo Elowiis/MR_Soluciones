@@ -138,14 +138,14 @@ export function PropertySearch() {
             <Button
               onClick={() => setShowMoreFilters(!showMoreFilters)}
               variant="outline"
-              className="w-full h-9 text-xs border-gray-300 rounded-lg"
+              className="w-full min-h-[44px] h-11 text-xs border-gray-300 rounded-lg text-gray-800 bg-white hover:bg-gray-50 hover:text-gray-900"
             >
-              <SlidersHorizontal className="w-3 h-3 mr-2" />
+              <SlidersHorizontal className="w-3 h-3 mr-2 text-gray-700" />
               {showMoreFilters ? 'Ocultar filtros' : 'Más filtros'}
               {showMoreFilters ? (
-                <ChevronUp className="w-3 h-3 ml-2" />
+                <ChevronUp className="w-3 h-3 ml-2 text-gray-700" />
               ) : (
-                <ChevronDown className="w-3 h-3 ml-2" />
+                <ChevronDown className="w-3 h-3 ml-2 text-gray-700" />
               )}
             </Button>
 

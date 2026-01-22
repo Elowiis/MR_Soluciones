@@ -7,7 +7,7 @@ import { HeroSection } from "@/components/HeroSection"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="w-full min-w-full min-h-screen bg-background">
       {/* 1. Hero Section */}
       <HeroSection />
 
