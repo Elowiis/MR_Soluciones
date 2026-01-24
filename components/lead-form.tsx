@@ -435,7 +435,7 @@ export function LeadForm() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
           {leadTypes.map(({ type, icon: Icon, color, bgColor, borderColor }) => (
             <motion.button
               key={type}
@@ -448,7 +448,7 @@ export function LeadForm() {
                   setErrors((prev) => ({ ...prev, leadType: "" }))
                 }
               }}
-                className={`relative p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl border-2 transition-all min-h-[44px] flex flex-col items-center justify-center ${
+                className={`relative p-2 sm:p-3 md:p-4 lg:p-6 rounded-lg sm:rounded-xl border-2 transition-all min-h-[44px] flex flex-col items-center justify-center ${
                 leadType === type
                   ? `${borderColor} ${bgColor} shadow-lg`
                   : errors.leadType
@@ -456,10 +456,10 @@ export function LeadForm() {
                     : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >
-              <div className={`inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-br ${color} mb-2 sm:mb-3`}>
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <div className={`inline-flex p-1.5 sm:p-2 md:p-3 rounded-lg bg-gradient-to-br ${color} mb-1.5 sm:mb-2 md:mb-3`}>
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <div className="font-semibold text-sm sm:text-base text-gray-900">{type}</div>
+              <div className="font-semibold text-xs sm:text-sm md:text-base text-gray-900 text-center leading-tight">{type}</div>
               
               {leadType === type && (
                 <motion.div
