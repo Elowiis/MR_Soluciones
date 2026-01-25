@@ -45,8 +45,8 @@ export function HeroSection() {
 
   return (
     <>
-      {/* Hero Section - Alturas responsive mejoradas */}
-      <section className="relative min-h-[100svh] h-[100svh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-20 md:pb-24 overflow-hidden">
+      {/* Hero Section - Con pt para compensar navbar fixed */}
+      <section className="relative min-h-[100svh] h-[100svh] md:h-[80vh] lg:h-[90vh] lg:min-h-[700px] max-h-[900px] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 pb-12 sm:pb-20 md:pb-24 overflow-hidden">
         {/* Carrusel de imágenes de fondo */}
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="wait">

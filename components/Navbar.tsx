@@ -226,9 +226,6 @@ export function Navbar() {
           </div>
         </div>
       </div>
-
-      {/* Spacer para evitar que el contenido quede debajo del navbar */}
-      <div className="h-16 md:h-20" />
     </>
   )
 }
