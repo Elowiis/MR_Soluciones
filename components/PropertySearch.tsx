@@ -13,25 +13,25 @@ import {
 } from '@/components/ui/select'
 
 const zonas = [
-  { value: 'todas', label: 'Todas las zonas' },
-  { value: 'ponferrada', label: 'Ponferrada' },
-  { value: 'bembibre', label: 'Bembibre' },
-  { value: 'camponaraya', label: 'Camponaraya' },
-  { value: 'carracedelo', label: 'Carracedelo' },
-  { value: 'cacabelos', label: 'Cacabelos' },
-  { value: 'villafranca', label: 'Villafranca del Bierzo' },
-  { value: 'toral', label: 'Toral de los Vados' },
-  { value: 'molinaseca', label: 'Molinaseca' },
+  { value: 'Todas las zonas', label: 'Todas las zonas' },
+  { value: 'Ponferrada', label: 'Ponferrada' },
+  { value: 'Bembibre', label: 'Bembibre' },
+  { value: 'Camponaraya', label: 'Camponaraya' },
+  { value: 'Carracedelo', label: 'Carracedelo' },
+  { value: 'Cacabelos', label: 'Cacabelos' },
+  { value: 'Villafranca del Bierzo', label: 'Villafranca del Bierzo' },
+  { value: 'Toral de los Vados', label: 'Toral de los Vados' },
+  { value: 'Molinaseca', label: 'Molinaseca' },
 ]
 
 const tiposPropiedad = [
   { value: 'all', label: 'Todos los tipos' },
-  { value: 'piso', label: 'Piso' },
-  { value: 'casa', label: 'Casa' },
-  { value: 'garaje', label: 'Garaje' },
-  { value: 'ático', label: 'Ático' },
-  { value: 'local', label: 'Local' },
-  { value: 'terreno', label: 'Terreno' },
+  { value: 'Piso', label: 'Piso' },
+  { value: 'Casa', label: 'Casa' },
+  { value: 'Garaje', label: 'Garaje' },
+  { value: 'Ático', label: 'Ático' },
+  { value: 'Local', label: 'Local' },
+  { value: 'Terreno', label: 'Terreno' },
 ]
 
 const precios = [
