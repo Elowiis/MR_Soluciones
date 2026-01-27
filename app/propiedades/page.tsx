@@ -75,19 +75,34 @@ function PropertiesContent() {
     const precioMaxParam = searchParams.get('precioMax')
     const operacion = searchParams.get('operacion')
 
-    if (tipo) {
+    // Solo establecer filtros si existen en la URL y no son "todos"
+    if (tipo && tipo !== 'todos') {
       setSelectedType(tipo as PropertyType)
+    } else {
+      setSelectedType('all')
     }
-    if (zona) {
+    
+    if (zona && zona !== 'todas') {
       setSelectedZona(zona)
+    } else {
+      setSelectedZona('todas')
     }
-    if (precioMaxParam) {
+    
+    if (precioMaxParam && precioMaxParam !== 'sin-limite') {
       setPrecioMax(precioMaxParam)
+    } else {
+      setPrecioMax('sin-limite')
     }
-    if (operacion === 'comprar') {
-      setSelectedStatus('en venta')
-    } else if (operacion === 'alquilar') {
-      setSelectedStatus('alquiler')
+    
+    // Solo establecer estado si operacion existe y no es "todos"
+    if (operacion && operacion !== 'todos') {
+      if (operacion === 'comprar') {
+        setSelectedStatus('en venta')
+      } else if (operacion === 'alquilar') {
+        setSelectedStatus('alquiler')
+      }
+    } else {
+      setSelectedStatus('all')
     }
   }, [searchParams])
 
@@ -110,20 +125,23 @@ function PropertiesContent() {
   useEffect(() => {
     let filtered = [...properties]
 
-    if (selectedType !== 'all') {
+    // Solo filtrar si el valor no es "all"
+    if (selectedType && selectedType !== 'all') {
       filtered = filtered.filter((prop) => prop.propertyType === selectedType)
     }
 
-    if (selectedStatus !== 'all') {
+    // Solo filtrar si el estado no es "all"
+    if (selectedStatus && selectedStatus !== 'all') {
       filtered = filtered.filter((prop) => prop.status === selectedStatus)
     }
 
-    if (selectedZona !== 'todas') {
+    if (selectedZona && selectedZona !== 'todas') {
       filtered = filtered.filter((prop) => 
         prop.location?.toLowerCase().includes(selectedZona.toLowerCase())
       )
     }
 
+    // Solo filtrar si hay un precio máximo y no es "sin-limite"
     if (precioMax && precioMax !== 'sin-limite') {
       if (precioMax === '300000') {
         filtered = filtered.filter((prop) => prop.price >= 300000)

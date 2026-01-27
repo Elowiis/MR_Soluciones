@@ -13,25 +13,31 @@ import {
 } from '@/components/ui/select'
 
 const zonas = [
-  { value: 'Todas las zonas', label: 'Todas las zonas' },
-  { value: 'Ponferrada', label: 'Ponferrada' },
-  { value: 'Bembibre', label: 'Bembibre' },
-  { value: 'Camponaraya', label: 'Camponaraya' },
-  { value: 'Carracedelo', label: 'Carracedelo' },
-  { value: 'Cacabelos', label: 'Cacabelos' },
-  { value: 'Villafranca del Bierzo', label: 'Villafranca del Bierzo' },
-  { value: 'Toral de los Vados', label: 'Toral de los Vados' },
-  { value: 'Molinaseca', label: 'Molinaseca' },
+  { value: 'todas', label: 'Todas las zonas' },
+  { value: 'ponferrada', label: 'Ponferrada' },
+  { value: 'bembibre', label: 'Bembibre' },
+  { value: 'camponaraya', label: 'Camponaraya' },
+  { value: 'carracedelo', label: 'Carracedelo' },
+  { value: 'cacabelos', label: 'Cacabelos' },
+  { value: 'villafranca', label: 'Villafranca del Bierzo' },
+  { value: 'toral', label: 'Toral de los Vados' },
+  { value: 'molinaseca', label: 'Molinaseca' },
 ]
 
 const tiposPropiedad = [
-  { value: 'all', label: 'Todos los tipos' },
-  { value: 'Piso', label: 'Piso' },
-  { value: 'Casa', label: 'Casa' },
-  { value: 'Garaje', label: 'Garaje' },
-  { value: 'Ático', label: 'Ático' },
-  { value: 'Local', label: 'Local' },
-  { value: 'Terreno', label: 'Terreno' },
+  { value: 'todos', label: 'Todos los tipos' },
+  { value: 'piso', label: 'Piso' },
+  { value: 'casa', label: 'Casa' },
+  { value: 'garaje', label: 'Garaje' },
+  { value: 'ático', label: 'Ático' },
+  { value: 'local', label: 'Local' },
+  { value: 'terreno', label: 'Terreno' },
+]
+
+const operaciones = [
+  { value: 'todos', label: 'Todas las operaciones' },
+  { value: 'comprar', label: 'Comprar' },
+  { value: 'alquilar', label: 'Alquilar' },
 ]
 
 const precios = [
@@ -45,8 +51,8 @@ const precios = [
 
 export function PropertySearch() {
   const router = useRouter()
-  const [operacion, setOperacion] = useState('comprar')
-  const [tipo, setTipo] = useState<string>('all')
+  const [operacion, setOperacion] = useState('todos')
+  const [tipo, setTipo] = useState<string>('todos')
   const [zona, setZona] = useState<string>('todas')
   const [precioMax, setPrecioMax] = useState<string>('sin-limite')
   const [showMoreFilters, setShowMoreFilters] = useState(false)
@@ -54,12 +60,12 @@ export function PropertySearch() {
   const handleSearch = () => {
     const params = new URLSearchParams()
 
-    // Siempre enviar la operación seleccionada para filtrar por venta/alquiler
-    if (operacion) {
+    // Solo incluir filtros que el usuario realmente seleccionó
+    if (operacion && operacion !== 'todos') {
       params.set('operacion', operacion)
     }
 
-    if (tipo && tipo !== 'all') {
+    if (tipo && tipo !== 'todos') {
       params.set('tipo', tipo)
     }
 
@@ -104,12 +110,15 @@ export function PropertySearch() {
                   Operación
                 </label>
                 <Select value={operacion} onValueChange={setOperacion}>
-                  <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
-                    <SelectValue />
+                  <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm font-medium p-0 focus:ring-0">
+                    <SelectValue placeholder="Todas las operaciones" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="comprar">Comprar</SelectItem>
-                    <SelectItem value="alquilar">Alquilar</SelectItem>
+                    {operaciones.map((op) => (
+                      <SelectItem key={op.value} value={op.value}>
+                        {op.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -120,8 +129,8 @@ export function PropertySearch() {
                   Ubicación
                 </label>
                 <Select value={zona} onValueChange={setZona}>
-                  <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
-                    <SelectValue placeholder="Todas" />
+                  <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm font-medium p-0 focus:ring-0">
+                    <SelectValue placeholder="Todas las zonas" />
                   </SelectTrigger>
                   <SelectContent>
                     {zonas.map((zona) => (
@@ -158,8 +167,8 @@ export function PropertySearch() {
                     Tipo
                   </label>
                   <Select value={tipo} onValueChange={setTipo}>
-                    <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
-                      <SelectValue placeholder="Todos" />
+                    <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm font-medium p-0 focus:ring-0">
+                      <SelectValue placeholder="Todos los tipos" />
                     </SelectTrigger>
                     <SelectContent>
                       {tiposPropiedad.map((tipo) => (
@@ -177,7 +186,7 @@ export function PropertySearch() {
                     Precio máx.
                   </label>
                   <Select value={precioMax} onValueChange={setPrecioMax}>
-                    <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm text-gray-900 font-medium p-0 focus:ring-0">
+                    <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-sm font-medium p-0 focus:ring-0">
                       <SelectValue placeholder="Sin límite" />
                     </SelectTrigger>
                     <SelectContent>
@@ -211,12 +220,15 @@ export function PropertySearch() {
                 Operación
               </label>
               <Select value={operacion} onValueChange={setOperacion}>
-                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-gray-900 font-medium p-0 focus:ring-0">
-                  <SelectValue />
+                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 font-medium p-0 focus:ring-0">
+                  <SelectValue placeholder="Todas las operaciones" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="comprar">Comprar</SelectItem>
-                  <SelectItem value="alquilar">Alquilar</SelectItem>
+                  {operaciones.map((op) => (
+                    <SelectItem key={op.value} value={op.value}>
+                      {op.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -227,7 +239,7 @@ export function PropertySearch() {
                 Tipo
               </label>
               <Select value={tipo} onValueChange={setTipo}>
-                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-gray-900 font-medium p-0 focus:ring-0">
+                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 font-medium p-0 focus:ring-0">
                   <SelectValue placeholder="Todos los tipos" />
                 </SelectTrigger>
                 <SelectContent>
@@ -246,7 +258,7 @@ export function PropertySearch() {
                 Ubicación
               </label>
               <Select value={zona} onValueChange={setZona}>
-                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-gray-900 font-medium p-0 focus:ring-0">
+                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 font-medium p-0 focus:ring-0">
                   <SelectValue placeholder="Todas las zonas" />
                 </SelectTrigger>
                 <SelectContent>
@@ -265,7 +277,7 @@ export function PropertySearch() {
                 Precio máximo
               </label>
               <Select value={precioMax} onValueChange={setPrecioMax}>
-                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 text-gray-900 font-medium p-0 focus:ring-0">
+                <SelectTrigger className="w-full border-0 bg-transparent hover:bg-transparent focus:bg-transparent h-8 font-medium p-0 focus:ring-0">
                   <SelectValue placeholder="Sin límite" />
                 </SelectTrigger>
                 <SelectContent>
