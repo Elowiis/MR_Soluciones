@@ -14,6 +14,7 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { 
   Home, 
   DollarSign, 
@@ -134,7 +135,7 @@ export function LeadForm() {
     }
 
     if (!formData.aceptaTerminos) {
-      newErrors.aceptaTerminos = "Debes aceptar los términos y condiciones"
+      newErrors.aceptaTerminos = "Debes aceptar la Política de Privacidad"
     }
 
     setErrors(newErrors)
@@ -934,11 +935,11 @@ export function LeadForm() {
           <span className={`text-xs sm:text-sm group-hover:text-gray-900 transition-colors leading-relaxed ${
             errors.aceptaTerminos ? "text-red-700" : "text-gray-600"
           }`}>
-            Acepto los{" "}
-            <a href="#" className="text-green-600 hover:text-green-700 font-medium underline">
-              términos y condiciones
-            </a>{" "}
-            y la política de privacidad *
+            He leído y acepto la{" "}
+            <Link href="/legal/aviso-legal" className="text-green-600 hover:text-green-700 font-medium underline">
+              Política de Privacidad
+            </Link>{" "}
+            *
           </span>
         </label>
         <ErrorMessage error={errors.aceptaTerminos} />

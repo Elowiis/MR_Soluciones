@@ -103,6 +103,29 @@ export function Footer() {
               </a>
             </div>
           </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-base sm:text-lg font-semibold mb-4">Legal</h3>
+            <ul className="space-y-1 sm:space-y-2">
+              <li>
+                <Link
+                  href="/legal/aviso-legal"
+                  className="block text-sm text-background/80 hover:text-background transition-colors min-h-[44px] flex items-center"
+                >
+                  Aviso Legal
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/politica-cookies"
+                  className="block text-sm text-background/80 hover:text-background transition-colors min-h-[44px] flex items-center"
+                >
+                  Política de Cookies
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Copyright */}
@@ -112,11 +135,11 @@ export function Footer() {
               &copy; {currentYear} MR Soluciones Inmobiliarias. Todos los derechos reservados.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-xs sm:text-sm text-background/80">
-              <Link href="#" className="hover:text-background transition-colors min-h-[44px] flex items-center justify-center">
-                Términos y Condiciones
+              <Link href="/legal/aviso-legal" className="hover:text-background transition-colors min-h-[44px] flex items-center justify-center">
+                Aviso Legal
               </Link>
-              <Link href="#" className="hover:text-background transition-colors min-h-[44px] flex items-center justify-center">
-                Política de Privacidad
+              <Link href="/legal/politica-cookies" className="hover:text-background transition-colors min-h-[44px] flex items-center justify-center">
+                Política de Cookies
               </Link>
             </div>
           </div>
