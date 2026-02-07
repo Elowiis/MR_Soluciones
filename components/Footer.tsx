@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Building2, Phone, Mail, MapPin, Instagram } from 'lucide-react'
+import { Building2, Phone, Mail, MapPin, Instagram, ArrowUpRight } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -12,136 +12,165 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-foreground text-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12">
-          {/* Logo y descripción */}
-          <div className="space-y-4">
+    <footer className="relative bg-foreground text-background overflow-hidden">
+      {/* Decorative accent line at top */}
+      <div className="h-1 bg-gradient-to-r from-primary via-primary/60 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        {/* Main grid — 3 columns on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
+
+          {/* Column 1: Brand + Social */}
+          <div className="space-y-6 lg:col-span-1">
             <Link
               href="/"
-              className="flex items-center gap-2 text-xl font-bold hover:opacity-80 transition-opacity"
+              className="inline-flex items-center gap-2.5 group"
             >
-              <Building2 className="w-6 h-6 text-primary" />
-              <span>MR Soluciones Inmobiliarias</span>
+              <Building2 className="w-7 h-7 text-primary transition-transform group-hover:scale-110" />
+              <span className="text-xl font-bold tracking-tight">
+                MR Soluciones
+                <br />
+                <span className="text-primary">Inmobiliarias</span>
+              </span>
             </Link>
-            <p className="text-sm text-background/80 leading-relaxed">
+
+            <p className="text-sm text-background/60 leading-relaxed max-w-xs">
               Tu aliado de confianza en el mercado inmobiliario. Conectamos compradores, vendedores e inversores con las mejores oportunidades.
             </p>
-          </div>
 
-          {/* Enlaces rápidos */}
-          <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4">Enlaces Rápidos</h3>
-            <ul className="space-y-1 sm:space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="block text-sm text-background/80 hover:text-background transition-colors min-h-[44px] flex items-center"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contacto */}
-          <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4">Contacto</h3>
-            <ul className="space-y-3 sm:space-y-4">
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-primary shrink-0 mt-1" />
-                <div className="min-h-[44px] flex flex-col justify-center">
-                  <p className="text-sm text-background/80">Teléfono</p>
-                  <a
-                    href="tel:+573001234567"
-                    className="text-sm text-background hover:underline"
-                  >
-                    +57 300 123 4567
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-primary shrink-0 mt-1" />
-                <div className="min-h-[44px] flex flex-col justify-center">
-                  <p className="text-sm text-background/80">Email</p>
-                  <a
-                    href="mailto:info@mrsoluciones.com"
-                    className="text-sm text-background hover:underline break-all"
-                  >
-                    info@mrsoluciones.com
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary shrink-0 mt-1" />
-                <div className="min-h-[44px] flex flex-col justify-center">
-                  <p className="text-sm text-background/80">Dirección</p>
-                  <p className="text-sm text-background">
-                    Avenida de España, 37, 1ºA
-                    <br />
-                    24400 Ponferrada, León
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          {/* Redes sociales */}
-          <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4">Síguenos</h3>
-            <div className="flex gap-3 sm:gap-4">
+            {/* Social */}
+            <div className="flex items-center gap-3 pt-2">
               <a
                 href="https://www.instagram.com/mr_solucionesinmobiliarias?igsh=MTllZGdpdzVyNmI2Nw=="
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-background/10 hover:bg-background/20 flex items-center justify-center transition-colors min-w-[44px] min-h-[44px]"
+                className="group/icon flex items-center gap-2 px-4 py-2.5 rounded-full border border-background/20 hover:border-primary hover:bg-primary/10 transition-all duration-300"
                 aria-label="Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-4 h-4 text-background/70 group-hover/icon:text-primary transition-colors" />
+                <span className="text-xs text-background/70 group-hover/icon:text-primary transition-colors">
+                  @mr_solucionesinmobiliarias
+                </span>
               </a>
             </div>
           </div>
 
-          {/* Legal */}
+          {/* Column 2: Navigation + Legal */}
+          <div className="grid grid-cols-2 gap-8">
+            {/* Nav links */}
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-background/40 mb-5">
+                Navegación
+              </h3>
+              <ul className="space-y-3">
+                {quickLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="group/link inline-flex items-center gap-1.5 text-sm text-background/70 hover:text-background transition-colors"
+                    >
+                      <span className="w-0 group-hover/link:w-2 h-px bg-primary transition-all duration-300" />
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Legal links */}
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-background/40 mb-5">
+                Legal
+              </h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="/legal/aviso-legal"
+                    className="group/link inline-flex items-center gap-1.5 text-sm text-background/70 hover:text-background transition-colors"
+                  >
+                    <span className="w-0 group-hover/link:w-2 h-px bg-primary transition-all duration-300" />
+                    Aviso Legal
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/legal/politica-cookies"
+                    className="group/link inline-flex items-center gap-1.5 text-sm text-background/70 hover:text-background transition-colors"
+                  >
+                    <span className="w-0 group-hover/link:w-2 h-px bg-primary transition-all duration-300" />
+                    Política de Cookies
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Column 3: Contact */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4">Legal</h3>
-            <ul className="space-y-1 sm:space-y-2">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-background/40 mb-5">
+              Contacto
+            </h3>
+            <ul className="space-y-5">
               <li>
-                <Link
-                  href="/legal/aviso-legal"
-                  className="block text-sm text-background/80 hover:text-background transition-colors min-h-[44px] flex items-center"
+                <a
+                  href="tel:+573001234567"
+                  className="group/contact flex items-center gap-3 hover:translate-x-1 transition-transform duration-300"
                 >
-                  Aviso Legal
-                </Link>
+                  <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover/contact:bg-primary/20 transition-colors">
+                    <Phone className="w-4 h-4 text-primary" />
+                  </span>
+                  <div>
+                    <p className="text-xs text-background/40">Teléfono</p>
+                    <p className="text-sm text-background/80 group-hover/contact:text-background transition-colors">
+                      +57 300 123 4567
+                    </p>
+                  </div>
+                </a>
               </li>
               <li>
-                <Link
-                  href="/legal/politica-cookies"
-                  className="block text-sm text-background/80 hover:text-background transition-colors min-h-[44px] flex items-center"
+                <a
+                  href="mailto:info@mrsoluciones.com"
+                  className="group/contact flex items-center gap-3 hover:translate-x-1 transition-transform duration-300"
                 >
-                  Política de Cookies
-                </Link>
+                  <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover/contact:bg-primary/20 transition-colors">
+                    <Mail className="w-4 h-4 text-primary" />
+                  </span>
+                  <div>
+                    <p className="text-xs text-background/40">Email</p>
+                    <p className="text-sm text-background/80 group-hover/contact:text-background transition-colors break-all">
+                      info@mrsoluciones.com
+                    </p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+                    <MapPin className="w-4 h-4 text-primary" />
+                  </span>
+                  <div>
+                    <p className="text-xs text-background/40">Dirección</p>
+                    <p className="text-sm text-background/80">
+                      Avenida de España, 37, 1ºA
+                      <br />
+                      24400 Ponferrada, León
+                    </p>
+                  </div>
+                </div>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-background/20 mt-8 sm:mt-12 pt-6 sm:pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs sm:text-sm text-background/80 text-center md:text-left">
+        {/* Bottom bar */}
+        <div className="border-t border-background/10 mt-12 sm:mt-16 pt-6 sm:pt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-background/40 text-center sm:text-left">
               &copy; {currentYear} MR Soluciones Inmobiliarias. Todos los derechos reservados.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-xs sm:text-sm text-background/80">
-              <Link href="/legal/aviso-legal" className="hover:text-background transition-colors min-h-[44px] flex items-center justify-center">
-                Aviso Legal
-              </Link>
-              <Link href="/legal/politica-cookies" className="hover:text-background transition-colors min-h-[44px] flex items-center justify-center">
-                Política de Cookies
-              </Link>
-            </div>
+            <p className="text-xs text-background/30">
+              Ponferrada, León — España
+            </p>
           </div>
         </div>
       </div>
