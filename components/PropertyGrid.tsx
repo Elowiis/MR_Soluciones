@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Property } from '@/types/property'
 import { PropertyCard } from './PropertyCard'
 import { PropertyAlertModal } from './PropertyAlertModal'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Bell } from 'lucide-react'
+import { Bell, SearchX } from 'lucide-react'
 
 interface SearchCriteria {
   operacion?: string
@@ -39,9 +40,20 @@ export function PropertyGrid({
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}
-            className="h-[500px] animate-pulse bg-muted rounded-xl"
+            className="overflow-hidden rounded-2xl ring-1 ring-gray-200/80 bg-white"
             aria-label="Cargando propiedad"
-          />
+          >
+            <div className="aspect-[4/3] animate-pulse bg-muted" />
+            <div className="p-5 space-y-3">
+              <div className="h-5 w-3/4 animate-pulse bg-muted rounded-md" />
+              <div className="h-4 w-1/2 animate-pulse bg-muted rounded-md" />
+              <div className="flex gap-2">
+                <div className="h-8 w-20 animate-pulse bg-muted rounded-lg" />
+                <div className="h-8 w-20 animate-pulse bg-muted rounded-lg" />
+                <div className="h-8 w-20 animate-pulse bg-muted rounded-lg" />
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     )
@@ -50,16 +62,19 @@ export function PropertyGrid({
   if (properties.length === 0) {
     return (
       <>
-        <div className="flex flex-col items-center justify-center py-12 text-center space-y-6">
+        <div className="mx-auto max-w-lg rounded-3xl border border-dashed border-gray-300 bg-gray-50/60 px-6 py-12 text-center space-y-6">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
+            <SearchX className="h-8 w-8 text-green-700" aria-hidden="true" />
+          </div>
           <div className="space-y-2">
-            <p className="text-lg text-muted-foreground">{emptyMessage}</p>
+            <p className="text-lg font-semibold text-gray-900">{emptyMessage}</p>
             <p className="text-sm text-muted-foreground">
               ¿Quieres que te avisemos cuando encontremos propiedades que coincidan con tu búsqueda?
             </p>
           </div>
           <Button
             onClick={() => setIsAlertModalOpen(true)}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg px-6 py-6 h-auto"
+            className="rounded-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold shadow-lg shadow-green-600/25 px-7 py-6 h-auto transition-all duration-300 hover:shadow-xl hover:shadow-green-600/35"
           >
             <Bell className="w-5 h-5 mr-2" />
             Avísame
@@ -83,12 +98,20 @@ export function PropertyGrid({
       role="list"
       aria-label="Lista de propiedades"
     >
-      {properties.map((property) => (
-        <div key={property._id} role="listitem">
+      {properties.map((property, index) => (
+        <motion.div
+          key={property._id}
+          role="listitem"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          // Escalonado por columna, con tope para listas largas
+          transition={{ duration: 0.45, delay: Math.min(index % 3, index) * 0.08, ease: 'easeOut' }}
+          className="h-full"
+        >
           <PropertyCard property={property} />
-        </div>
+        </motion.div>
       ))}
     </div>
   )
 }
-

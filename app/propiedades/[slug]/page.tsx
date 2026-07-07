@@ -5,16 +5,19 @@ import { getPropertyBySlug, getAllProperties } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
 import { Property } from '@/types/property'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Bed, 
-  Bath, 
-  Square, 
-  Home, 
+import { cn } from '@/lib/utils'
+import {
+  ArrowLeft,
+  MapPin,
+  Bed,
+  Bath,
+  Square,
+  Home,
   MessageCircle,
-  CheckCircle2
+  CheckCircle2,
+  Star,
+  FileText,
+  Sparkles,
 } from 'lucide-react'
 import { PortableText } from '@/lib/portable-text'
 import type { Metadata } from 'next'
@@ -34,30 +37,12 @@ const formatPrice = (price: number): string => {
   }).format(price)
 }
 
-const getStatusBadgeVariant = (status: Property['status']) => {
-  switch (status) {
-    case 'en venta':
-      return 'success'
-    case 'vendido':
-      return 'destructive'
-    case 'reservado':
-      return 'warning'
-    default:
-      return 'default'
-  }
-}
-
-const getStatusLabel = (status: Property['status']) => {
-  switch (status) {
-    case 'en venta':
-      return 'En Venta'
-    case 'vendido':
-      return 'Vendido'
-    case 'reservado':
-      return 'Reservado'
-    default:
-      return status
-  }
+// Chip de estado con color semántico (mismo lenguaje que PropertyCard)
+const statusStyles: Record<Property['status'], { label: string; className: string }> = {
+  'en venta': { label: 'En venta', className: 'bg-green-600 text-white' },
+  alquiler: { label: 'Alquiler', className: 'bg-sky-600 text-white' },
+  reservado: { label: 'Reservado', className: 'bg-amber-500 text-white' },
+  vendido: { label: 'Vendido', className: 'bg-gray-900/85 text-white' },
 }
 
 
@@ -140,46 +125,92 @@ export default async function PropertyPage({ params }: PageProps) {
   )
   const whatsappUrl = `https://wa.me/573000000000?text=${whatsappMessage}`
 
+  const status = statusStyles[property.status] ?? {
+    label: property.status,
+    className: 'bg-gray-700 text-white',
+  }
+  const isAlquiler = property.status === 'alquiler'
+  const pricePerM2 =
+    !isAlquiler && property.squareMeters > 0
+      ? Math.round(property.price / property.squareMeters)
+      : null
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header con botón volver */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <Link href="/propiedades">
-            <Button variant="ghost" className="gap-2 text-sm sm:text-base min-h-[44px]">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Volver a propiedades</span>
-              <span className="sm:hidden">Volver</span>
-            </Button>
+      {/* Barra sticky: volver + precio siempre a la vista (queda bajo el navbar) */}
+      <div className="sticky top-16 md:top-20 z-30 bg-background/90 backdrop-blur-md border-b border-border/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-3">
+          <Link
+            href="/propiedades"
+            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors min-h-[40px]"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Volver a propiedades</span>
+            <span className="sm:hidden">Volver</span>
           </Link>
+          <div className="flex items-center gap-2.5">
+            <span
+              className={cn(
+                'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide',
+                status.className
+              )}
+            >
+              {status.label}
+            </span>
+            <span className="text-base sm:text-lg font-bold text-green-700">
+              {formatPrice(property.price)}
+              {isAlquiler && <span className="text-xs font-medium text-muted-foreground">/mes</span>}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8 pb-20 md:pb-8">
-        {/* Título y badges */}
-        <div className="mb-6">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            {property.isFeatured && (
-              <Badge variant="gradient">⭐ Destacado</Badge>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8 pb-24 lg:pb-8">
+        {/* Cabecera: título/ubicación a la izquierda, precio a la derecha */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span
+                className={cn(
+                  'inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide shadow-sm',
+                  status.className
+                )}
+              >
+                {status.label}
+              </span>
+              {property.isFeatured && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/95 px-2.5 py-1 text-xs font-bold text-amber-950 shadow-sm">
+                  <Star className="w-3 h-3 fill-amber-950" />
+                  Destacado
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                <Home className="w-3 h-3" />
+                {property.propertyType.charAt(0).toUpperCase() + property.propertyType.slice(1)}
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 text-balance">
+              {property.title}
+            </h1>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-green-600/70" />
+              <span className="text-sm sm:text-base md:text-lg">
+                {property.location}
+                {property.neighborhood && `, ${property.neighborhood}`}
+              </span>
+            </div>
+          </div>
+
+          <div className="md:text-right shrink-0">
+            <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
+              {formatPrice(property.price)}
+              {isAlquiler && <span className="text-lg font-semibold">/mes</span>}
+            </div>
+            {pricePerM2 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {new Intl.NumberFormat('es-ES').format(pricePerM2)} €/m²
+              </p>
             )}
-            <Badge variant={getStatusBadgeVariant(property.status)}>
-              {getStatusLabel(property.status)}
-            </Badge>
-            <Badge variant="outline" className="gap-1.5">
-              <Home className="w-3 h-3" />
-              {property.propertyType.charAt(0).toUpperCase() + property.propertyType.slice(1)}
-            </Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{property.title}</h1>
-          <div className="flex items-center gap-2 text-muted-foreground mb-3 sm:mb-4">
-            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="text-sm sm:text-base md:text-lg">
-              {property.location}
-              {property.neighborhood && `, ${property.neighborhood}`}
-            </span>
-          </div>
-          <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4 sm:mb-6">
-            {formatPrice(property.price)}
           </div>
         </div>
 
@@ -196,52 +227,66 @@ export default async function PropertyPage({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* Columna principal */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            {/* Características principales */}
-            <div className="bg-card rounded-lg border p-4 sm:p-6">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Características</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                {property.bedrooms !== undefined && property.bedrooms > 0 && (
-                  <div className="flex flex-col items-center gap-2">
-                    <Bed className="w-8 h-8 text-primary" />
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{property.bedrooms}</div>
-                      <div className="text-sm text-muted-foreground">Habitaciones</div>
-                    </div>
+            {/* Características principales: tiles con icono */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {property.bedrooms !== undefined && property.bedrooms > 0 && (
+                <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
+                    <Bed className="w-5 h-5 text-green-700" />
                   </div>
-                )}
-                {property.bathrooms !== undefined && property.bathrooms > 0 && (
-                  <div className="flex flex-col items-center gap-2">
-                    <Bath className="w-8 h-8 text-primary" />
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{property.bathrooms}</div>
-                      <div className="text-sm text-muted-foreground">Baños</div>
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-col items-center gap-2">
-                  <Square className="w-8 h-8 text-primary" />
                   <div className="text-center">
-                    <div className="text-2xl font-bold">{property.squareMeters}</div>
-                    <div className="text-sm text-muted-foreground">m²</div>
+                    <div className="text-xl sm:text-2xl font-bold leading-none">{property.bedrooms}</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mt-1">Habitaciones</div>
                   </div>
                 </div>
-                {property.propertyType && (
-                  <div className="flex flex-col items-center gap-2">
-                    <Home className="w-8 h-8 text-primary" />
-                    <div className="text-center">
-                      <div className="text-lg font-bold capitalize">{property.propertyType}</div>
-                      <div className="text-sm text-muted-foreground">Tipo</div>
+              )}
+              {property.bathrooms !== undefined && property.bathrooms > 0 && (
+                <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
+                    <Bath className="w-5 h-5 text-green-700" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl sm:text-2xl font-bold leading-none">{property.bathrooms}</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mt-1">
+                      {property.bathrooms === 1 ? 'Baño' : 'Baños'}
                     </div>
                   </div>
-                )}
+                </div>
+              )}
+              <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
+                  <Square className="w-5 h-5 text-green-700" />
+                </div>
+                <div className="text-center">
+                  <div className="text-xl sm:text-2xl font-bold leading-none">{property.squareMeters}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mt-1">m²</div>
+                </div>
               </div>
+              {property.propertyType && (
+                <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
+                    <Home className="w-5 h-5 text-green-700" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-base sm:text-lg font-bold capitalize leading-none">
+                      {property.propertyType}
+                    </div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mt-1">Tipo</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Descripción */}
             {property.description && (
-              <div className="bg-card rounded-lg border p-4 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Descripción</h2>
-                <div className="prose prose-slate max-w-none text-sm sm:text-base">
+              <div className="bg-card rounded-2xl border border-border/70 p-5 sm:p-7">
+                <h2 className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50">
+                    <FileText className="w-4 h-4 text-green-700" />
+                  </span>
+                  Descripción
+                </h2>
+                <div className="prose prose-slate max-w-none text-sm sm:text-base leading-relaxed">
                   <PortableText value={property.description} />
                 </div>
               </div>
@@ -249,13 +294,21 @@ export default async function PropertyPage({ params }: PageProps) {
 
             {/* Características adicionales */}
             {property.features && property.features.length > 0 && (
-              <div className="bg-card rounded-lg border p-4 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Características adicionales</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+              <div className="bg-card rounded-2xl border border-border/70 p-5 sm:p-7">
+                <h2 className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold mb-4 sm:mb-5">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50">
+                    <Sparkles className="w-4 h-4 text-green-700" />
+                  </span>
+                  Características adicionales
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   {property.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                      <span className="capitalize">{feature}</span>
+                    <div
+                      key={index}
+                      className="flex items-center gap-2.5 rounded-xl bg-green-50/60 border border-green-600/10 px-3 py-2.5"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                      <span className="capitalize text-sm sm:text-base">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -264,46 +317,84 @@ export default async function PropertyPage({ params }: PageProps) {
 
             {/* Ubicación en el mapa */}
             {property.geoLocation && property.geoLocation.lat && property.geoLocation.lng && (
-              <div className="bg-card rounded-lg border p-6">
-                <h2 className="text-2xl font-bold mb-4">Ubicación</h2>
-                <PropertyMap lat={property.geoLocation.lat} lng={property.geoLocation.lng} />
+              <div className="bg-card rounded-2xl border border-border/70 p-5 sm:p-7">
+                <h2 className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold mb-4">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50">
+                    <MapPin className="w-4 h-4 text-green-700" />
+                  </span>
+                  Ubicación
+                </h2>
+                <div className="overflow-hidden rounded-xl">
+                  <PropertyMap lat={property.geoLocation.lat} lng={property.geoLocation.lng} />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Sidebar con botón de contacto */}
+          {/* Sidebar de contacto */}
           <div className="lg:col-span-1">
-            <div className="bg-card rounded-lg border p-4 sm:p-6 sticky top-20 md:top-24">
-              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">¿Interesado en esta propiedad?</h3>
-              <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
-                Contáctanos para más información o agendar una visita
-              </p>
-              <div className="space-y-3">
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full gap-2 bg-emerald-500 hover:bg-emerald-600 min-h-[44px] text-sm sm:text-base">
-                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Contactar por WhatsApp
-                  </Button>
-                </a>
-                <Link href="/#lead-form">
-                  <Button variant="outline" className="w-full min-h-[44px] text-sm sm:text-base">
-                    Solicitar información
-                  </Button>
-                </Link>
+            <div className="overflow-hidden bg-card rounded-2xl border border-border/70 shadow-sm sticky top-32 md:top-36">
+              {/* Recap de precio */}
+              <div className="bg-gradient-to-br from-green-700 to-emerald-600 px-5 sm:px-6 py-5 text-white">
+                <p className="text-xs font-semibold uppercase tracking-wider text-green-100 mb-1">
+                  {isAlquiler ? 'Alquiler mensual' : 'Precio de venta'}
+                </p>
+                <p className="text-2xl sm:text-3xl font-bold leading-none">
+                  {formatPrice(property.price)}
+                  {isAlquiler && <span className="text-base font-medium text-green-100">/mes</span>}
+                </p>
+                {pricePerM2 && (
+                  <p className="text-sm text-green-100/90 mt-1.5">
+                    {new Intl.NumberFormat('es-ES').format(pricePerM2)} €/m²
+                  </p>
+                )}
               </div>
-              <div className="mt-6 pt-6 border-t space-y-3 text-sm">
-                <div>
-                  <div className="font-semibold mb-1">Ubicación</div>
-                  <div className="text-muted-foreground">
-                    {property.location}
-                    {property.neighborhood && `, ${property.neighborhood}`}
-                  </div>
+
+              <div className="p-5 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-bold mb-2">¿Te interesa esta propiedad?</h3>
+                <p className="text-sm text-muted-foreground mb-5">
+                  Escríbenos para más información o para agendar una visita, sin compromiso
+                </p>
+                <div className="space-y-3">
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block">
+                    <Button className="w-full gap-2 rounded-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 shadow-lg shadow-green-600/25 hover:shadow-xl hover:shadow-green-600/35 min-h-[46px] text-sm sm:text-base font-semibold transition-all duration-300">
+                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                      Contactar por WhatsApp
+                    </Button>
+                  </a>
+                  <Link href="/#lead-form" className="block">
+                    <Button
+                      variant="outline"
+                      className="w-full rounded-full min-h-[46px] text-sm sm:text-base border-green-600/30 text-green-700 hover:bg-green-50 hover:border-green-600/50"
+                    >
+                      Solicitar información
+                    </Button>
+                  </Link>
                 </div>
-                <div>
-                  <div className="font-semibold mb-1">Estado</div>
-                  <Badge variant={getStatusBadgeVariant(property.status)}>
-                    {getStatusLabel(property.status)}
-                  </Badge>
+
+                <div className="mt-6 pt-5 border-t border-border/70 space-y-3 text-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-muted-foreground">Ubicación</span>
+                    <span className="font-medium text-right">
+                      {property.location}
+                      {property.neighborhood && `, ${property.neighborhood}`}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-muted-foreground">Estado</span>
+                    <span
+                      className={cn(
+                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide',
+                        status.className
+                      )}
+                    >
+                      {status.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-muted-foreground">Tipo</span>
+                    <span className="font-medium capitalize">{property.propertyType}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -311,19 +402,24 @@ export default async function PropertyPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* WhatsApp Fijo Móvil */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-background border-t border-border p-4 shadow-lg">
-        <a 
-          href={whatsappUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="w-full"
-        >
-          <Button className="w-full gap-2 bg-emerald-500 hover:bg-emerald-600 min-h-[44px] text-base font-semibold">
-            <MessageCircle className="w-5 h-5" />
-            Contactar por WhatsApp
-          </Button>
-        </a>
+      {/* Barra fija móvil: precio + WhatsApp */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-background/95 backdrop-blur-md border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-lg">
+        <div className="flex items-center gap-3 max-w-lg mx-auto">
+          <div className="min-w-0">
+            <p className="text-[11px] text-muted-foreground leading-none mb-0.5">
+              {isAlquiler ? 'Alquiler /mes' : 'Precio'}
+            </p>
+            <p className="text-lg font-bold text-green-700 leading-none truncate">
+              {formatPrice(property.price)}
+            </p>
+          </div>
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <Button className="w-full gap-2 rounded-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 min-h-[46px] text-sm font-semibold shadow-lg shadow-green-600/25">
+              <MessageCircle className="w-5 h-5" />
+              WhatsApp
+            </Button>
+          </a>
+        </div>
       </div>
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
 interface GalleryImage {
   url: string;
@@ -69,17 +69,21 @@ export function PropertyGallery({ mainImage, gallery }: PropertyGalleryProps) {
           <button
             type="button"
             onClick={() => openLightbox(0)}
-            className="group relative block w-full h-[420px] rounded-lg overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60"
+            className="group relative block w-full h-[440px] rounded-2xl overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60"
           >
             <Image
               src={mainImage.url}
               alt={mainImage.alt}
               fill
               sizes="(max-width: 1024px) 100vw, 66vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
               priority
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-black/0 to-black/0" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
+            <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white">
+              <Camera className="w-3.5 h-3.5" />
+              {totalImages} {totalImages === 1 ? "foto" : "fotos"}
+            </span>
           </button>
         </div>
 
@@ -93,7 +97,7 @@ export function PropertyGallery({ mainImage, gallery }: PropertyGalleryProps) {
                   key={index}
                   type="button"
                   onClick={() => openLightbox(index + 1)}
-                  className="group relative block rounded-lg overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60"
+                  className="group relative block rounded-xl overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60"
                 >
                   <Image
                     src={img.url}
@@ -122,7 +126,7 @@ export function PropertyGallery({ mainImage, gallery }: PropertyGalleryProps) {
         <button
           type="button"
           onClick={() => openLightbox(0)}
-          className="group relative block w-full aspect-[4/3] rounded-lg overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60"
+          className="group relative block w-full aspect-[4/3] rounded-2xl overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60"
         >
           <Image
             src={mainImage.url}
@@ -132,6 +136,10 @@ export function PropertyGallery({ mainImage, gallery }: PropertyGalleryProps) {
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             priority
           />
+          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-sm px-2.5 py-1 text-xs font-medium text-white">
+            <Camera className="w-3.5 h-3.5" />
+            {totalImages}
+          </span>
         </button>
 
         {gallery.length > 0 && (
@@ -141,7 +149,7 @@ export function PropertyGallery({ mainImage, gallery }: PropertyGalleryProps) {
                 key={index}
                 type="button"
                 onClick={() => openLightbox(index + 1)}
-                className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60 shrink-0"
+                className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary/60 shrink-0"
               >
                 <Image
                   src={img.url}
