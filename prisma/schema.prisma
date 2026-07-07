@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  leads     Lead[]
+}
+
+model Lead {
+  id                String   @id @default(cuid())
+  nombre            String
+  email             String
+  whatsapp          String
+  tipo              String   // "Comprador", "Vendedor", "Arriendo"
+  
+  // Campos para Comprador
+  presupuesto       String?  // "Menos de $200M", "$200M-$400M", "$400M-$600M", "Más de $600M", "No lo sé"
+  zona              String?  // "Norte", "Sur", "Oriente", "Occidente", "Centro", "Otra"
+  tipoPropiedad     String?  // "Apartamento", "Casa", "Oficina", "Lote"
+  habitaciones      String?  // "1", "2", "3", "4+"
+  urgencia          String?  // "Menos de 1 mes", "1-3 meses", "3-6 meses", "Solo exploro"
+  
+  // Campos para Vendedor
+  zonaPropiedad     String?
+  tipoVenta         String?  // "Apartamento", "Casa", "Oficina", "Lote", "Finca"
+  metrosCuadrados   Int?
+  habitacionesVenta String?
+  precioEsperado    String?
+  documentosRegla   String?  // "Sí todo en regla", "Necesito ayuda", "No estoy seguro"
+  urgenciaVenta     String?  // "Urgente (menos 1 mes)", "1-3 meses", "Más de 3 meses"
+  
+  // Campos generales
+  mensaje           String?
+  score             Int      @default(0)
+  estado            String   @default("Nuevo") // "Nuevo", "Contactado", "Calificado", "Visitando", "Negociando", "Cerrado", "Perdido"
+  agenteAsignado    String?
+  notas             String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
