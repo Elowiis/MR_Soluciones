@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Mock authentication - in production, use proper database queries
-    if (email === "admin@inmobiliario.com" && password === "password123") {
+    if (email === "Mrodriguez12" && password === "MRsoluciones12") {
       const token = Buffer.from(`${email}:${Date.now()}`).toString("base64")
 
       return NextResponse.json(

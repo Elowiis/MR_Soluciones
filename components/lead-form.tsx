@@ -211,7 +211,7 @@ export function LeadForm() {
       }
   
       const response = await fetch(
-        "https://primary-production-a806.up.railway.app/webhook-test/8669bb8a-bb73-4726-b8db-ac3a7e92a029",
+        "https://primary-production-a806.up.railway.app/webhook/8669bb8a-bb73-4726-b8db-ac3a7e92a029",
         {
           method: "POST",
           headers: {

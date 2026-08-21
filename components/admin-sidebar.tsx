@@ -154,7 +154,7 @@ export function AdminSidebar() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold text-white">Admin User</p>
-              <p className="text-xs text-gray-400">admin@inmobiliario.com</p>
+              <p className="text-xs text-gray-400">Mrodriguez12</p>
             </div>
           </div>
         </motion.div>
