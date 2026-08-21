@@ -168,9 +168,17 @@ export function Footer() {
             <p className="text-xs text-background/40 text-center sm:text-left">
               &copy; {currentYear} MR Soluciones Inmobiliarias. Todos los derechos reservados.
             </p>
-            <p className="text-xs text-background/30">
-              Ponferrada, León — España
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="text-xs text-background/30">
+                Ponferrada, León — España
+              </p>
+              <Link
+                href="/studio"
+                className="text-xs text-background/20 hover:text-background/50 transition-colors"
+              >
+                Admin
+              </Link>
+            </div>
           </div>
         </div>
       </div>
