@@ -188,7 +188,7 @@ export default function ConocenosPage() {
                   Hola, soy <strong className="text-foreground">Manuel Rodríguez Voces</strong>, gerente de esta agencia inmobiliaria en Ponferrada, y la persona que estará a tu lado para ayudarte a comprar, vender o alquilar tu vivienda con total confianza.
                 </p>
                 <p>
-                  Con más de tres años de experiencia en el sector inmobiliario, y tras trabajar en diferentes ciudades, decidí fundar esta agencia en Ponferrada con un propósito claro: ofrecer un servicio inmobiliario profesional, honesto y transparente. Estos valores son nuestra base, y los aplicamos en cada operación para que tú solo tengas que preocuparte de tomar la mejor decisión.
+                  Con más de cuatro años de experiencia en el sector inmobiliario, y tras trabajar en diferentes ciudades, decidí fundar esta agencia en Ponferrada con un propósito claro: ofrecer un servicio inmobiliario profesional, honesto y transparente. Estos valores son nuestra base, y los aplicamos en cada operación para que tú solo tengas que preocuparte de tomar la mejor decisión.
                 </p>
                 <p>
                   Nos gusta hacer las cosas de forma clara, cercana y eficaz, sin letra pequeña ni sorpresas. Porque sabemos lo importante que es encontrar no solo una propiedad, sino un lugar donde construir futuro.
@@ -215,7 +215,7 @@ export default function ConocenosPage() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6"
           >
             {[
-              { icon: Award, value: '3+', label: 'Años de experiencia', color: 'text-green-600' },
+              { icon: Award, value: '4+', label: 'Años de experiencia', color: 'text-green-600' },
               { icon: Building2, value: '100+', label: 'Propiedades gestionadas', color: 'text-emerald-600' },
               { icon: Users, value: '200+', label: 'Clientes satisfechos', color: 'text-teal-600' },
             ].map((stat, index) => {
@@ -360,7 +360,7 @@ export default function ConocenosPage() {
               {
                 icon: Award,
                 title: 'Experiencia',
-                description: 'Más de 3 años de trayectoria en el sector inmobiliario, con un profundo conocimiento del mercado de Ponferrada y alrededores.',
+                description: 'Más de 4 años de trayectoria en el sector inmobiliario, con un profundo conocimiento del mercado de Ponferrada y alrededores.',
                 color: 'bg-green-50 text-green-600',
               },
               {

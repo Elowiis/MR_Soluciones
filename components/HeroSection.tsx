@@ -115,7 +115,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-3 sm:mb-5 md:mb-6 text-balance opacity-90 max-w-3xl mx-auto leading-relaxed px-2"
           >
-            Conectamos compradores, vendedores e inversores con las mejores oportunidades inmobiliarias
+            Conectamos personas con las mejores oportunidades inmobiliarias
           </motion.p>
 
           {/* Buscador de propiedades */}
@@ -138,10 +138,15 @@ export function HeroSection() {
             <Button
               onClick={scrollToForm}
               size="lg"
-              className="bg-white text-green-900 hover:bg-green-50 text-xs sm:text-sm md:text-base lg:text-lg px-5 sm:px-7 md:px-9 py-2 sm:py-3 md:py-4 lg:py-6 rounded-full font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group w-full sm:w-auto min-h-[40px] sm:min-h-[44px]"
+              className="bg-white text-green-900 hover:bg-green-50 px-10 sm:px-12 md:px-14 py-5 sm:py-6 md:py-7 rounded-full font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group w-full sm:w-auto min-h-[64px] sm:min-h-[72px] flex flex-col items-center justify-center leading-tight gap-1.5"
             >
-              Contrata nuestros servicios
-              <ArrowRight className="ml-2 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
+              <span className="text-base sm:text-lg md:text-xl lg:text-2xl flex items-center whitespace-nowrap">
+                ¿Vendes un inmueble?
+                <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <span className="text-sm sm:text-base md:text-lg font-medium text-green-700 whitespace-nowrap">
+                Solicita una valoración
+              </span>
             </Button>
             
             <Button

@@ -3,6 +3,7 @@ import { LeadForm } from "@/components/lead-form"
 import { BenefitsSection } from "@/components/benefits-section"
 import { FeaturedPropertiesSection } from "@/components/FeaturedPropertiesSection"
 import { HeroSection } from "@/components/HeroSection"
+import { GoogleReviewsSection } from "@/components/GoogleReviewsSection"
 
 
 export default function Home() {
@@ -19,7 +20,12 @@ export default function Home() {
       {/* 4. Benefits Section */}
       <BenefitsSection />
 
-      {/* 5. Lead Form Section */}
+      {/* 5. Reseñas de Google */}
+      <section id="resenas">
+        <GoogleReviewsSection />
+      </section>
+
+      {/* 6. Lead Form Section */}
       <section
         id="lead-form"
         className="relative py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-gradient-to-b from-white to-green-50/70 overflow-hidden"

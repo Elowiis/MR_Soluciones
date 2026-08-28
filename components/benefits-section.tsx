@@ -7,27 +7,27 @@ export function BenefitsSection() {
   const benefits = [
     {
       icon: MapPin,
-      title: "Conocemos El Bierzo",
+      title: "Vivimos El Bierzo, ponemos El Bierzo a tu favor.",
       description:
-        "Trabajamos en Ponferrada y los pueblos de la comarca. Sabemos lo que se paga en cada zona porque es donde vivimos.",
+        "No solo conocemos cada calle de Ponferrada y cada rincón de la comarca; sabemos exactamente qué vale cada metro cuadrado porque esta es nuestra casa. Vendemos con datos reales, no con estimaciones.",
     },
     {
       icon: Handshake,
       title: "Trato directo",
       description:
-        "Hablas siempre con la misma persona, sin centralitas ni vueltas. Te contamos las cosas como son, también cuando no es lo que quieres oír.",
+        "Cero centralitas, cero intermediarios y cero rodeos. Desde la primera toma de contacto hasta la firma ante notario, hablas única y exclusivamente con el mismo profesional. Trabajamos con un principio claro: la honestidad por encima de la venta.",
     },
     {
       icon: FileCheck2,
-      title: "Papeleo sin dolores de cabeza",
+      title: "Cero burocracia, cero sorpresas.",
       description:
-        "Nota simple, contratos, notaría... revisamos que todo esté en regla antes de firmar para que no te lleves sorpresas.",
+        "Nos encargamos de todo el papeleo: nota simple, contratos, certificados y gestión con la notaría. Revisamos al milímetro que cada documento esté en regla para que tú solo tengas que preocuparte de firmar con total tranquilidad.",
     },
     {
       icon: MessageCircle,
-      title: "Sin prisas ni presión",
+      title: "Te acompañamos hasta el final... y más allá.",
       description:
-        "Preferimos que encuentres la casa que te encaja a cerrar rápido una operación. Si algo no te conviene, te lo decimos.",
+        "La firma ante Notario no es el final de nuestro trabajo. Nuestro servicio también incluye ayuda con toda la gestión post-venta.",
     },
   ]
 
