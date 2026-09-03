@@ -17,6 +17,17 @@ export interface GoogleReview {
   authorUri?: string
 }
 
+/**
+ * Reseña copiada a mano en lib/curated-reviews.ts.
+ *
+ * Guarda la fecha absoluta en vez del texto "Hace N meses": ese texto se
+ * calcula en cada render, así que envejece solo y nunca se queda congelado.
+ */
+export type CuratedReview = Omit<GoogleReview, 'relativeTime'> & {
+  /** Fecha aproximada de publicación en formato ISO (YYYY-MM-DD). */
+  publishedAt: string
+}
+
 export interface GooglePlaceReviews {
   rating: number
   totalRatings: number
@@ -56,6 +67,51 @@ interface PlacesApiPlace {
     writeAReviewUri?: string
   }
   reviews?: PlacesApiReview[]
+}
+
+/**
+ * Convierte una fecha en el texto relativo que usa Google en español
+ * ("Hace 3 meses", "Hace un año"...). Se recalcula en cada render, por lo que
+ * las reseñas manuales envejecen solas sin tocar el código.
+ */
+export function formatRelativeTime(isoDate: string, now: Date = new Date()): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate.trim())
+  if (!match) return ''
+
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  if (month < 1 || month > 12 || day < 1 || day > 31) return ''
+
+  // Comparamos días de calendario, no instantes: así el resultado no depende
+  // de la hora ni de la zona horaria del servidor.
+  const published = Date.UTC(year, month - 1, day)
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+
+  const days = Math.floor((today - published) / 86_400_000)
+  if (days <= 0) return 'Hoy'
+  if (days === 1) return 'Ayer'
+  if (days < 7) return `Hace ${days} días`
+
+  let months = (now.getFullYear() - year) * 12 + (now.getMonth() - (month - 1))
+  // Aún no se ha cumplido el mes si no hemos llegado al día del aniversario.
+  if (now.getDate() < day) months -= 1
+
+  // Menos de un mes cumplido: Google habla en semanas.
+  if (months < 1) {
+    const weeks = Math.floor(days / 7)
+    return weeks === 1 ? 'Hace una semana' : `Hace ${weeks} semanas`
+  }
+
+  if (months < 12) return months === 1 ? 'Hace un mes' : `Hace ${months} meses`
+
+  const years = Math.floor(months / 12)
+  return years === 1 ? 'Hace un año' : `Hace ${years} años`
+}
+
+/** Añade el texto relativo, calculado ahora mismo, a una reseña manual. */
+function withRelativeTime({ publishedAt, ...review }: CuratedReview): GoogleReview {
+  return { ...review, relativeTime: formatRelativeTime(publishedAt) }
 }
 
 function getApiKey(): string | undefined {
@@ -149,7 +205,7 @@ export async function getGoogleReviews(): Promise<GooglePlaceReviews | null> {
     // Si el proyecto no tiene acceso, Google lo omite sin devolver error y solo
     // llegan la valoración global y el número de reseñas. En ese caso usamos las
     // reseñas copiadas manualmente en lib/curated-reviews.ts, si las hay.
-    const source = apiReviews.length > 0 ? apiReviews : curatedReviews
+    const source = apiReviews.length > 0 ? apiReviews : curatedReviews.map(withRelativeTime)
 
     // Las mejor valoradas primero, y como mucho MAX_REVIEWS.
     const reviews = [...source].sort((a, b) => b.rating - a.rating).slice(0, MAX_REVIEWS)
