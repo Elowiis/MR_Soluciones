@@ -279,10 +279,10 @@ export default function ConocenosPage() {
                   <div>
                     <h3 className="font-semibold mb-1 text-foreground">Teléfono</h3>
                     <a
-                      href="tel:+34912345678"
+                      href="tel:+34638441042"
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      +34 912 345 678
+                      638 44 10 42
                     </a>
                   </div>
                 </div>
@@ -292,10 +292,10 @@ export default function ConocenosPage() {
                   <div>
                     <h3 className="font-semibold mb-1 text-foreground">Email</h3>
                     <a
-                      href="mailto:info@mrsoluciones.es"
+                      href="mailto:info@mrsolucionesinmobiliarias.es"
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      info@mrsoluciones.es
+                      info@mrsolucionesinmobiliarias.es
                     </a>
                   </div>
                 </div>

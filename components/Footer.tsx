@@ -113,7 +113,7 @@ export function Footer() {
             <ul className="space-y-5">
               <li>
                 <a
-                  href="tel:+573001234567"
+                  href="tel:+34638441042"
                   className="group/contact flex items-center gap-3 hover:translate-x-1 transition-transform duration-300"
                 >
                   <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover/contact:bg-primary/20 transition-colors">
@@ -122,14 +122,14 @@ export function Footer() {
                   <div>
                     <p className="text-xs text-background/40">Teléfono</p>
                     <p className="text-sm text-background/80 group-hover/contact:text-background transition-colors">
-                      +57 300 123 4567
+                      638 44 10 42
                     </p>
                   </div>
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@mrsoluciones.com"
+                  href="mailto:info@mrsolucionesinmobiliarias.es"
                   className="group/contact flex items-center gap-3 hover:translate-x-1 transition-transform duration-300"
                 >
                   <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover/contact:bg-primary/20 transition-colors">
@@ -138,7 +138,7 @@ export function Footer() {
                   <div>
                     <p className="text-xs text-background/40">Email</p>
                     <p className="text-sm text-background/80 group-hover/contact:text-background transition-colors break-all">
-                      info@mrsoluciones.com
+                      info@mrsolucionesinmobiliarias.es
                     </p>
                   </div>
                 </a>
