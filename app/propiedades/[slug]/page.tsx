@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import type { FilteredResponseQueryOptions } from 'next-sanity'
 import { clientForISR } from '@/sanity/lib/client'
 import { getPropertyBySlug, getAllProperties } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
@@ -28,6 +29,19 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+// Red de seguridad si el webhook de Sanity no está configurado o falla:
+// como mucho 60 s de desfase. Con el webhook la purga es instantánea.
+export const revalidate = 60
+
+// Explícito aunque sea el valor por defecto: una propiedad nueva genera su
+// página bajo demanda sin esperar al siguiente deploy.
+export const dynamicParams = true
+
+// Cache de Next etiquetada con 'property'; /api/revalidate invalida ese tag.
+const propertyCacheOptions: FilteredResponseQueryOptions = {
+  next: { revalidate: 60, tags: ['property'] },
+}
+
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
@@ -47,7 +61,11 @@ const statusStyles: Record<Property['status'], { label: string; className: strin
 
 
 export async function generateStaticParams() {
-  const properties = await clientForISR.fetch<Property[]>(getAllProperties)
+  const properties = await clientForISR.fetch<Property[]>(
+    getAllProperties,
+    {},
+    propertyCacheOptions
+  )
   
   return properties.map((property) => ({
     slug: property.slug.current,
@@ -58,7 +76,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const property = await clientForISR.fetch<Property | null>(
     getPropertyBySlug,
-    { slug }
+    { slug },
+    propertyCacheOptions
   )
 
   if (!property) {
@@ -104,7 +123,8 @@ export default async function PropertyPage({ params }: PageProps) {
   const { slug } = await params
   const property = await clientForISR.fetch<Property | null>(
     getPropertyBySlug,
-    { slug }
+    { slug },
+    propertyCacheOptions
   )
 
   if (!property) {
@@ -123,7 +143,7 @@ export default async function PropertyPage({ params }: PageProps) {
   const whatsappMessage = encodeURIComponent(
     `Hola, estoy interesado en la propiedad: ${property.title} - ${property.location}`
   )
-  const whatsappUrl = `https://wa.me/573000000000?text=${whatsappMessage}`
+  const whatsappUrl = `https://wa.me/34638441042?text=${whatsappMessage}`
 
   const status = statusStyles[property.status] ?? {
     label: property.status,

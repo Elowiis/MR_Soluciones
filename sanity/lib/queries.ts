@@ -165,3 +165,38 @@ export const getPropertiesByStatus = groq`
   }
 `
 
+
+// Query para la home: las destacadas primero y, detrás, las más recientes.
+// coalesce() evita que las propiedades sin el campo isFeatured queden fuera de
+// orden, y el slice limita la home a 6 tarjetas (dos filas en escritorio).
+export const getHomeProperties = groq`
+  *[_type == "property"] | order(coalesce(isFeatured, false) desc, createdAt desc) [0...6] {
+    _id,
+    title,
+    slug,
+    mainImage {
+      asset,
+      alt
+    },
+    gallery[] {
+      asset,
+      alt
+    },
+    price,
+    location,
+    neighborhood,
+    geoLocation {
+      lat,
+      lng
+    },
+    bedrooms,
+    bathrooms,
+    squareMeters,
+    description,
+    features,
+    propertyType,
+    status,
+    isFeatured,
+    createdAt
+  }
+`
