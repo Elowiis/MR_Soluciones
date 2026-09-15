@@ -8,8 +8,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email and password required" }, { status: 400 })
     }
 
-    // Mock authentication - in production, use proper database queries
-    if (email === "Mrodriguez12" && password === "MRsoluciones12") {
+    const adminEmail = process.env.ADMIN_EMAIL
+    const adminPassword = process.env.ADMIN_PASSWORD
+
+    if (email === adminEmail && password === adminPassword) {
       const token = Buffer.from(`${email}:${Date.now()}`).toString("base64")
 
       return NextResponse.json(
