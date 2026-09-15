@@ -30,7 +30,6 @@ const propertyTypes: { value: PropertyType | 'all'; label: string }[] = [
   { value: 'piso', label: 'Piso' },
   { value: 'casa', label: 'Casa' },
   { value: 'chalet', label: 'Chalet' },
-  { value: 'ático', label: 'Ático' },
   { value: 'garaje', label: 'Garaje' },
   { value: 'terreno', label: 'Terreno' },
   { value: 'estudio', label: 'Estudio' },
