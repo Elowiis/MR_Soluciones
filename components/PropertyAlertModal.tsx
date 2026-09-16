@@ -93,7 +93,7 @@ export function PropertyAlertModal({ isOpen, onClose, searchCriteria }: Property
       }
 
       const response = await fetch(
-        'https://primary-production-a806.up.railway.app/webhook/655bde93-bd7f-4bff-a9cb-87c7529530d5',
+        '/api/formularios/alerta',
         {
           method: 'POST',
           headers: {
