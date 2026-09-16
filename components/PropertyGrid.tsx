@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Property } from '@/types/property'
+import type { Property } from '@/types/property'
 import { PropertyCard } from './PropertyCard'
 import { PropertyAlertModal } from './PropertyAlertModal'
 import { Button } from '@/components/ui/button'
@@ -100,7 +100,7 @@ export function PropertyGrid({
     >
       {properties.map((property, index) => (
         <motion.div
-          key={property._id}
+          key={property.id}
           role="listitem"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}

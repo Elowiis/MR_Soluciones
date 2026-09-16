@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PropertyGrid } from '@/components/PropertyGrid'
-import { Property, PropertyType, PropertyStatus } from '@/types/property'
+import type { Property, PropertyStatus } from '@/types/property'
+import { slugify } from '@/lib/inmovilla/adapter'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -25,17 +26,58 @@ import {
   ChevronUp,
 } from 'lucide-react'
 
-const propertyTypes: { value: PropertyType | 'all'; label: string }[] = [
-  { value: 'all', label: 'Todos' },
-  { value: 'piso', label: 'Piso' },
-  { value: 'casa', label: 'Casa' },
-  { value: 'chalet', label: 'Chalet' },
-  { value: 'garaje', label: 'Garaje' },
-  { value: 'terreno', label: 'Terreno' },
-  { value: 'estudio', label: 'Estudio' },
-  { value: 'local', label: 'Local' },
-  { value: 'oficina', label: 'Oficina' },
-]
+// Los chips de tipo salen de los tipos realmente presentes en el catálogo:
+// Inmovilla maneja más de 100 y cambian con el tiempo, así que una lista fija
+// dejaría propiedades invisibles. Los menos frecuentes se agrupan en "Otros".
+const MAX_TYPE_CHIPS = 8
+const OTHER_TYPES = '__otros__'
+
+interface TypeChip {
+  value: string
+  label: string
+  count: number
+}
+
+function buildTypeChips(properties: Property[]): { chips: TypeChip[]; otherTypes: Set<string> } {
+  const counts = new Map<string, number>()
+  for (const property of properties) {
+    counts.set(property.propertyType, (counts.get(property.propertyType) ?? 0) + 1)
+  }
+
+  const sorted = [...counts.entries()].sort(
+    ([typeA, countA], [typeB, countB]) => countB - countA || typeA.localeCompare(typeB, 'es')
+  )
+  const main = sorted.slice(0, MAX_TYPE_CHIPS)
+  const rest = sorted.slice(MAX_TYPE_CHIPS)
+  const otherCount = rest.reduce((sum, [, count]) => sum + count, 0)
+
+  const chips: TypeChip[] = [
+    { value: 'all', label: 'Todos', count: properties.length },
+    ...main.map(([type, count]) => ({ value: type, label: type, count })),
+  ]
+  if (rest.length > 0) {
+    chips.push({ value: OTHER_TYPES, label: 'Otros', count: otherCount })
+  }
+
+  return { chips, otherTypes: new Set(rest.map(([type]) => type)) }
+}
+
+// El buscador de la home envía `tipo=piso|casa|local|...`: se resuelve contra
+// los tipos presentes por coincidencia de slug ("local" → "Local comercial").
+function resolveTypeParam(
+  param: string,
+  chips: TypeChip[],
+  otherTypes: Set<string>
+): string {
+  const wanted = slugify(param)
+  if (!wanted) return 'all'
+  const chip = chips.find((c) => c.value !== 'all' && c.value !== OTHER_TYPES && slugify(c.value).includes(wanted))
+  if (chip) return chip.value
+  for (const type of otherTypes) {
+    if (slugify(type).includes(wanted)) return OTHER_TYPES
+  }
+  return 'all'
+}
 
 const statusTabs: { value: PropertyStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'Todo' },
@@ -70,9 +112,21 @@ const sortOptions = [
   { value: 'precio-desc', label: 'Precio: mayor a menor' },
 ]
 
+// No todas las fichas informan precio: al ordenar por precio, las que no lo
+// tienen van al final en ambos sentidos.
+const comparePrice =
+  (direction: 1 | -1) =>
+  (a: Property, b: Property): number => {
+    if (a.price == null && b.price == null) return 0
+    if (a.price == null) return 1
+    if (b.price == null) return -1
+    return (a.price - b.price) * direction
+  }
+
 function PropertiesContent({ properties }: { properties: Property[] }) {
   const searchParams = useSearchParams()
-  const [selectedType, setSelectedType] = useState<PropertyType | 'all'>('all')
+  const { chips: propertyTypes, otherTypes } = useMemo(() => buildTypeChips(properties), [properties])
+  const [selectedType, setSelectedType] = useState<string>('all')
   const [selectedStatus, setSelectedStatus] = useState<PropertyStatus | 'all'>('all')
   const [selectedZona, setSelectedZona] = useState<string>('todas')
   const [precioMax, setPrecioMax] = useState<string>('sin-limite')
@@ -96,7 +150,7 @@ function PropertiesContent({ properties }: { properties: Property[] }) {
     const operacion = searchParams.get('operacion')
 
     if (tipo && tipo !== 'todos') {
-      setSelectedType(tipo as PropertyType)
+      setSelectedType(resolveTypeParam(tipo, propertyTypes, otherTypes))
     } else {
       setSelectedType('all')
     }
@@ -122,17 +176,24 @@ function PropertiesContent({ properties }: { properties: Property[] }) {
     } else {
       setSelectedStatus('all')
     }
-  }, [searchParams])
+  }, [searchParams, propertyTypes, otherTypes])
 
   const filteredProperties = useMemo(() => {
     let filtered = [...properties]
 
-    if (selectedType !== 'all') {
+    if (selectedType === OTHER_TYPES) {
+      filtered = filtered.filter((prop) => otherTypes.has(prop.propertyType))
+    } else if (selectedType !== 'all') {
       filtered = filtered.filter((prop) => prop.propertyType === selectedType)
     }
 
     if (selectedStatus !== 'all') {
-      filtered = filtered.filter((prop) => prop.status === selectedStatus)
+      // "Vender o Alquilar" cuenta como venta y también como alquiler.
+      filtered = filtered.filter(
+        (prop) =>
+          prop.status === selectedStatus ||
+          (selectedStatus === 'alquiler' && prop.rentPrice != null)
+      )
     }
 
     if (selectedZona !== 'todas') {
@@ -143,22 +204,22 @@ function PropertiesContent({ properties }: { properties: Property[] }) {
 
     if (precioMax !== 'sin-limite') {
       if (precioMax === '300000') {
-        filtered = filtered.filter((prop) => prop.price >= 300000)
+        filtered = filtered.filter((prop) => prop.price != null && prop.price >= 300000)
       } else {
         const precioMaxNum = parseInt(precioMax)
-        filtered = filtered.filter((prop) => prop.price <= precioMaxNum)
+        filtered = filtered.filter((prop) => prop.price != null && prop.price <= precioMaxNum)
       }
     }
 
     if (sortBy === 'precio-asc') {
-      filtered.sort((a, b) => a.price - b.price)
+      filtered.sort(comparePrice(1))
     } else if (sortBy === 'precio-desc') {
-      filtered.sort((a, b) => b.price - a.price)
+      filtered.sort(comparePrice(-1))
     }
     // 'recientes': la query ya viene ordenada por createdAt desc
 
     return filtered
-  }, [properties, selectedType, selectedStatus, selectedZona, precioMax, sortBy])
+  }, [properties, otherTypes, selectedType, selectedStatus, selectedZona, precioMax, sortBy])
 
   const clearFilters = () => {
     setSelectedType('all')
@@ -191,6 +252,9 @@ function PropertiesContent({ properties }: { properties: Property[] }) {
             )}
           >
             {type.label}
+            <span className={cn('ml-1.5 text-[11px]', active ? 'text-white/80' : 'text-muted-foreground/70')}>
+              {type.count}
+            </span>
           </button>
         )
       })}
@@ -451,7 +515,11 @@ function PropertiesContent({ properties }: { properties: Property[] }) {
 
         <PropertyGrid
           properties={filteredProperties}
-          emptyMessage="No se encontraron propiedades con los filtros seleccionados"
+          emptyMessage={
+            properties.length === 0
+              ? 'No hay propiedades disponibles en este momento'
+              : 'No se encontraron propiedades con los filtros seleccionados'
+          }
           searchCriteria={{
             operacion: searchParams.get('operacion') || undefined,
             tipo: selectedType !== 'all' ? selectedType : undefined,

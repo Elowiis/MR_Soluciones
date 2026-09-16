@@ -1,19 +1,12 @@
 import Link from 'next/link'
 import { Star, ArrowRight } from 'lucide-react'
-import { clientForISR } from '@/sanity/lib/client'
-import { getHomeProperties } from '@/sanity/lib/queries'
+import { getHomeProperties } from '@/lib/inmovilla/queries'
 import { PropertyGrid } from './PropertyGrid'
-import type { Property } from '@/types/property'
 
 export async function FeaturedPropertiesSection() {
-  // Cacheado con el tag 'property': el webhook de Sanity lo invalida al instante.
-  // El revalidate es la red de seguridad si el webhook no está configurado.
-  // La query ya devuelve las destacadas primero, como mucho 6.
-  const properties = await clientForISR.fetch<Property[]>(
-    getHomeProperties,
-    {},
-    { next: { revalidate: 60, tags: ['property'] } }
-  )
+  // Destacadas primero, como mucho 6. Si Supabase falla llega [] y la
+  // sección no se pinta.
+  const properties = await getHomeProperties()
 
   if (properties.length === 0) {
     return null

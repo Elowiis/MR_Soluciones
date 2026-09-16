@@ -195,3 +195,36 @@ secreto ausente o incorrecto; `405` si no es POST; `500` error inesperado.
 códigos no documentados.
 
 El cron de Vercel se configurará después de validar la importación a mano.
+
+### La web lee las propiedades de Supabase
+
+Desde septiembre de 2026 **Sanity ya no es fuente de propiedades**: `/`,
+`/propiedades` y `/propiedades/[slug]` leen únicamente de Supabase, alimentado
+por el importador de Inmovilla. Lo que no está en el XML no está en la web.
+
+Sanity sigue en el repo sin cambios (Studio en `/studio`, esquema, webhook de
+`/api/revalidate`) por si hay que volver atrás, pero ninguna página lo consulta.
+Su esquema solo define el tipo `property`; no sirve otro contenido.
+
+| Variable | Valor |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → *Project URL* (la misma que `SUPABASE_URL`) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → *anon* / *publishable*. Clave pública: respeta el RLS, que solo deja leer `activa = true` |
+
+`SUPABASE_SERVICE_ROLE_KEY` sigue siendo solo del importador: no se usa para leer
+desde la web ni aparece en código que llegue al navegador.
+
+Código: `lib/inmovilla/queries.ts` (lectura con clave anon, `revalidate: 60` con
+tag `inmovilla`; `getProperties`, `getPropertyBySlug`, `getHomeProperties`),
+`lib/inmovilla/adapter.ts` (fila de Supabase → `Property`, slug, etiquetas de
+extras) y `types/property.ts`.
+
+- Si Supabase falla, `getProperties` captura el error, lo loguea y devuelve `[]`:
+  `/propiedades` muestra "No hay propiedades disponibles en este momento" y la
+  home omite la sección. Nunca una excepción sin controlar.
+- Slugs: `tipo-ciudad-referencia` (`piso-ponferrada-00226`). La referencia va
+  siempre al final; si falta se usa `id_inmovilla`.
+- Los chips de tipo de `/propiedades` se derivan de los tipos presentes en el
+  catálogo (los 8 más frecuentes; el resto bajo "Otros"), así ninguna propiedad
+  queda fuera de todos los filtros aunque Inmovilla añada tipos nuevos.
+- Las fotos vienen de `*.apinmo.com`, autorizado en `next.config.ts`.

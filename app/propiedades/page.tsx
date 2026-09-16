@@ -1,11 +1,8 @@
 import type { Metadata } from 'next'
-import { clientForISR } from '@/sanity/lib/client'
-import { getAllProperties } from '@/sanity/lib/queries'
-import type { Property } from '@/types/property'
+import { getProperties } from '@/lib/inmovilla/queries'
 import PropertiesClient from './PropertiesClient'
 
-// Red de seguridad si el webhook de Sanity no está configurado o falla:
-// como mucho 60 s de desfase. Con el webhook la purga es instantánea.
+// El importador corre una vez al día: 60 s de desfase máximo es suficiente.
 export const revalidate = 60
 
 export const metadata: Metadata = {
@@ -15,13 +12,8 @@ export const metadata: Metadata = {
 }
 
 export default async function PropertiesPage() {
-  // Fetch en servidor (SSR + SEO). Cacheado con el tag 'property', que
-  // /api/revalidate invalida en cuanto se toca una propiedad en el Studio.
-  const properties = await clientForISR.fetch<Property[]>(
-    getAllProperties,
-    {},
-    { next: { revalidate: 60, tags: ['property'] } }
-  )
+  // Si Supabase falla, getProperties devuelve [] y la página pinta el estado vacío.
+  const properties = await getProperties()
 
   return <PropertiesClient initialProperties={properties} />
 }

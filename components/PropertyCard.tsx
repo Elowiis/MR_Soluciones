@@ -2,8 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Property } from '@/types/property'
-import { urlFor } from '@/sanity/lib/image'
+import type { Property, PropertyStatus } from '@/types/property'
 import { cn } from '@/lib/utils'
 import { MapPin, Bed, Bath, Square, Star, ArrowRight } from 'lucide-react'
 
@@ -21,40 +20,28 @@ const formatPrice = (price: number): string => {
 }
 
 // Chip de estado: color propio por estado para lectura inmediata
-const statusStyles: Record<Property['status'], { label: string; className: string }> = {
+const statusStyles: Record<PropertyStatus, { label: string; className: string }> = {
   'en venta': { label: 'En venta', className: 'bg-green-600 text-white' },
   alquiler: { label: 'Alquiler', className: 'bg-sky-600 text-white' },
-  reservado: { label: 'Reservado', className: 'bg-amber-500 text-white' },
-  vendido: { label: 'Vendido', className: 'bg-gray-900/85 text-white' },
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
-  const imageUrl = property.mainImage?.asset
-    ? urlFor(property.mainImage).width(600).height(400).url()
-    : '/placeholder-property.jpg'
-
-  const imageAlt = property.mainImage?.alt || property.title
-  const status = statusStyles[property.status] ?? {
-    label: property.status,
-    className: 'bg-gray-700 text-white',
-  }
-  const isVendido = property.status === 'vendido'
+  const imageUrl = property.mainImageUrl ?? '/placeholder-property.jpg'
+  const priceText = property.price == null ? 'Consultar' : formatPrice(property.price)
+  const status = statusStyles[property.status]
   const isAlquiler = property.status === 'alquiler'
 
   return (
-    <Link href={`/propiedades/${property.slug.current}`} className="group block h-full">
+    <Link href={`/propiedades/${property.slug}`} className="group block h-full">
       <article className="relative h-full flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200/80 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-green-900/10 hover:ring-green-500/30 hover:-translate-y-1.5">
         {/* Imagen con precio y tipo superpuestos */}
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
           <Image
             src={imageUrl}
-            alt={imageAlt}
+            alt={property.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className={cn(
-              'object-cover transition-transform duration-500 group-hover:scale-105',
-              isVendido && 'saturate-50'
-            )}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority={false}
           />
           {/* Degradado inferior para legibilidad del precio */}
@@ -85,16 +72,14 @@ export function PropertyCard({ property }: PropertyCardProps) {
           {/* Precio + tipo (abajo, sobre la imagen) */}
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
             <p className="text-white text-xl sm:text-2xl font-bold drop-shadow-md leading-none">
-              {formatPrice(property.price)}
+              {priceText}
               {isAlquiler && (
                 <span className="text-sm font-medium text-white/80"> /mes</span>
               )}
             </p>
-            {property.propertyType && (
-              <span className="rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm">
-                {property.propertyType.charAt(0).toUpperCase() + property.propertyType.slice(1)}
-              </span>
-            )}
+            <span className="rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm">
+              {property.propertyType}
+            </span>
           </div>
         </div>
 
@@ -115,7 +100,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
 
           {/* Specs en chips: lo que el visitante escanea primero */}
           <div className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
-            {property.bedrooms !== undefined && property.bedrooms > 0 && (
+            {property.bedrooms != null && property.bedrooms > 0 && (
               <span
                 className="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 border border-gray-100 px-2.5 py-1.5"
                 aria-label={`${property.bedrooms} habitaciones`}
@@ -124,7 +109,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 {property.bedrooms} hab.
               </span>
             )}
-            {property.bathrooms !== undefined && property.bathrooms > 0 && (
+            {property.bathrooms != null && property.bathrooms > 0 && (
               <span
                 className="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 border border-gray-100 px-2.5 py-1.5"
                 aria-label={`${property.bathrooms} baños`}
@@ -133,17 +118,19 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 {property.bathrooms} {property.bathrooms === 1 ? 'baño' : 'baños'}
               </span>
             )}
-            <span
-              className="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 border border-gray-100 px-2.5 py-1.5"
-              aria-label={`${property.squareMeters} metros cuadrados`}
-            >
-              <Square className="h-4 w-4 text-green-600/70" aria-hidden="true" />
-              {property.squareMeters} m²
-            </span>
+            {property.squareMeters != null && (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 border border-gray-100 px-2.5 py-1.5"
+                aria-label={`${property.squareMeters} metros cuadrados`}
+              >
+                <Square className="h-4 w-4 text-green-600/70" aria-hidden="true" />
+                {property.squareMeters} m²
+              </span>
+            )}
           </div>
 
           {/* Features extra, discretas */}
-          {property.features && property.features.length > 0 && (
+          {property.features.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {property.features.slice(0, 2).map((feature, index) => (
                 <span

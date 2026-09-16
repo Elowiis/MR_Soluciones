@@ -1,10 +1,8 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import type { FilteredResponseQueryOptions } from 'next-sanity'
-import { clientForISR } from '@/sanity/lib/client'
-import { getPropertyBySlug, getAllProperties } from '@/sanity/lib/queries'
-import { urlFor } from '@/sanity/lib/image'
-import { Property } from '@/types/property'
+import type { Metadata } from 'next'
+import { getProperties, getPropertyBySlug } from '@/lib/inmovilla/queries'
+import type { Property, PropertyStatus } from '@/types/property'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import {
@@ -20,8 +18,6 @@ import {
   FileText,
   Sparkles,
 } from 'lucide-react'
-import { PortableText } from '@/lib/portable-text'
-import type { Metadata } from 'next'
 import { PropertyGallery } from '@/components/PropertyGallery'
 import { PropertyMap } from '@/components/PropertyMap'
 
@@ -29,18 +25,12 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// Red de seguridad si el webhook de Sanity no está configurado o falla:
-// como mucho 60 s de desfase. Con el webhook la purga es instantánea.
+// El importador corre una vez al día: 60 s de desfase máximo es suficiente.
 export const revalidate = 60
 
 // Explícito aunque sea el valor por defecto: una propiedad nueva genera su
 // página bajo demanda sin esperar al siguiente deploy.
 export const dynamicParams = true
-
-// Cache de Next etiquetada con 'property'; /api/revalidate invalida ese tag.
-const propertyCacheOptions: FilteredResponseQueryOptions = {
-  next: { revalidate: 60, tags: ['property'] },
-}
 
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('es-ES', {
@@ -52,33 +42,55 @@ const formatPrice = (price: number): string => {
 }
 
 // Chip de estado con color semántico (mismo lenguaje que PropertyCard)
-const statusStyles: Record<Property['status'], { label: string; className: string }> = {
+const statusStyles: Record<PropertyStatus, { label: string; className: string }> = {
   'en venta': { label: 'En venta', className: 'bg-green-600 text-white' },
   alquiler: { label: 'Alquiler', className: 'bg-sky-600 text-white' },
-  reservado: { label: 'Reservado', className: 'bg-amber-500 text-white' },
-  vendido: { label: 'Vendido', className: 'bg-gray-900/85 text-white' },
 }
 
+function priceLabel(property: Property): string {
+  return property.price == null ? 'Consultar precio' : formatPrice(property.price)
+}
+
+function detailRows(property: Property): { label: string; value: string }[] {
+  const rows: { label: string; value: string | number | null }[] = [
+    { label: 'Referencia', value: property.referencia },
+    { label: 'Conservación', value: property.conservacion },
+    { label: 'Orientación', value: property.orientacion },
+    { label: 'Año de construcción', value: property.anyoConstruccion },
+    { label: 'Planta', value: property.planta },
+    { label: 'Superficie útil', value: property.usableSquareMeters != null ? `${property.usableSquareMeters} m²` : null },
+    { label: 'Parcela', value: property.plotSquareMeters != null ? `${property.plotSquareMeters} m²` : null },
+    { label: 'Habitaciones simples', value: property.singleBedrooms },
+    { label: 'Habitaciones dobles', value: property.doubleBedrooms },
+    { label: 'Aseos', value: property.toilets },
+    { label: 'Cocina', value: property.tipoCocina },
+    { label: 'Electrodomésticos', value: property.electrodomesticos },
+    { label: 'Parking', value: property.parking },
+    { label: 'Garaje', value: property.plazaGaraje },
+    { label: 'Exterior / interior', value: property.exteriorInterior },
+    { label: 'Certificado energético', value: property.energiaLetra },
+    { label: 'Código postal', value: property.postalCode },
+  ]
+  return rows
+    .filter((row) => row.value != null && row.value !== '')
+    .map((row) => ({ label: row.label, value: String(row.value) }))
+}
 
 export async function generateStaticParams() {
-  const properties = await clientForISR.fetch<Property[]>(
-    getAllProperties,
-    {},
-    propertyCacheOptions
-  )
-  
-  return properties.map((property) => ({
-    slug: property.slug.current,
-  }))
+  // getProperties ya captura los fallos de Supabase, pero un build no debe
+  // romperse por nada: sin rutas pregeneradas, dynamicParams las resuelve.
+  try {
+    const properties = await getProperties()
+    return properties.map((property) => ({ slug: property.slug }))
+  } catch (error) {
+    console.error('[propiedades] generateStaticParams sin rutas:', error)
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const property = await clientForISR.fetch<Property | null>(
-    getPropertyBySlug,
-    { slug },
-    propertyCacheOptions
-  )
+  const property = await getPropertyBySlug(slug)
 
   if (!property) {
     return {
@@ -86,72 +98,45 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const imageUrl = property.mainImage?.asset
-    ? urlFor(property.mainImage).width(1200).height(630).url()
-    : undefined
-
-  // Extraer texto del contenido portable text para la descripción
-  let description = `Propiedad en ${property.location} - ${property.squareMeters}m²`
-  if (property.description && Array.isArray(property.description)) {
-    const textBlocks = property.description
-      .filter((block: any) => block._type === 'block' && block.children)
-      .map((block: any) =>
-        block.children
-          .map((child: any) => child.text || '')
-          .join('')
-      )
-      .join(' ')
-      .trim()
-    
-    if (textBlocks) {
-      description = textBlocks.slice(0, 160) + (textBlocks.length > 160 ? '...' : '')
-    }
-  }
+  const priceText = priceLabel(property)
+  const plain = property.description?.replace(/\s+/g, ' ').trim()
+  const description = plain
+    ? plain.slice(0, 160) + (plain.length > 160 ? '...' : '')
+    : `Propiedad en ${property.location}`
 
   return {
-    title: `${property.title} - ${formatPrice(property.price)}`,
+    title: `${property.title} - ${priceText}`,
     description,
     openGraph: {
       title: property.title,
-      description: `Propiedad en ${property.location} - ${formatPrice(property.price)}`,
-      images: imageUrl ? [{ url: imageUrl }] : [],
+      description: `Propiedad en ${property.location} - ${priceText}`,
+      images: property.mainImageUrl ? [{ url: property.mainImageUrl }] : [],
     },
   }
 }
 
 export default async function PropertyPage({ params }: PageProps) {
   const { slug } = await params
-  const property = await clientForISR.fetch<Property | null>(
-    getPropertyBySlug,
-    { slug },
-    propertyCacheOptions
-  )
+  const property = await getPropertyBySlug(slug)
 
   if (!property) {
     notFound()
   }
 
-  const mainImageUrl = property.mainImage?.asset
-    ? urlFor(property.mainImage).width(1200).height(800).url()
-    : '/placeholder-property.jpg'
-
-  const galleryImages = property.gallery?.map((img) => ({
-    url: urlFor(img).width(800).height(600).url(),
-    alt: img.alt || property.title,
-  })) || []
+  const mainImageUrl = property.mainImageUrl ?? '/placeholder-property.jpg'
+  const priceText = priceLabel(property)
+  const rentText = property.rentPrice != null ? formatPrice(property.rentPrice) : null
+  const details = detailRows(property)
 
   const whatsappMessage = encodeURIComponent(
     `Hola, estoy interesado en la propiedad: ${property.title} - ${property.location}`
   )
   const whatsappUrl = `https://wa.me/34638441042?text=${whatsappMessage}`
 
-  const status = statusStyles[property.status] ?? {
-    label: property.status,
-    className: 'bg-gray-700 text-white',
-  }
+  const status = statusStyles[property.status]
   const isAlquiler = property.status === 'alquiler'
   const pricePerM2 =
-    !isAlquiler && property.squareMeters > 0
+    !isAlquiler && property.price != null && property.squareMeters != null && property.squareMeters > 0
       ? Math.round(property.price / property.squareMeters)
       : null
 
@@ -178,7 +163,7 @@ export default async function PropertyPage({ params }: PageProps) {
               {status.label}
             </span>
             <span className="text-base sm:text-lg font-bold text-green-700">
-              {formatPrice(property.price)}
+              {priceText}
               {isAlquiler && <span className="text-xs font-medium text-muted-foreground">/mes</span>}
             </span>
           </div>
@@ -206,7 +191,7 @@ export default async function PropertyPage({ params }: PageProps) {
               )}
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground">
                 <Home className="w-3 h-3" />
-                {property.propertyType.charAt(0).toUpperCase() + property.propertyType.slice(1)}
+                {property.propertyType}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 text-balance">
@@ -223,7 +208,7 @@ export default async function PropertyPage({ params }: PageProps) {
 
           <div className="md:text-right shrink-0">
             <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
-              {formatPrice(property.price)}
+              {priceText}
               {isAlquiler && <span className="text-lg font-semibold">/mes</span>}
             </div>
             {pricePerM2 && (
@@ -231,16 +216,18 @@ export default async function PropertyPage({ params }: PageProps) {
                 {new Intl.NumberFormat('es-ES').format(pricePerM2)} €/m²
               </p>
             )}
+            {rentText && (
+              <p className="text-sm text-muted-foreground mt-1">
+                o {rentText}/mes en alquiler
+              </p>
+            )}
           </div>
         </div>
 
         {/* Galería de imágenes */}
         <PropertyGallery
-          mainImage={{
-            url: mainImageUrl,
-            alt: property.mainImage?.alt || property.title,
-          }}
-          gallery={galleryImages}
+          mainImage={{ url: mainImageUrl, alt: property.title }}
+          gallery={property.gallery}
         />
 
         {/* Información principal */}
@@ -249,7 +236,7 @@ export default async function PropertyPage({ params }: PageProps) {
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Características principales: tiles con icono */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {property.bedrooms !== undefined && property.bedrooms > 0 && (
+              {property.bedrooms != null && property.bedrooms > 0 && (
                 <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
                     <Bed className="w-5 h-5 text-green-700" />
@@ -260,7 +247,7 @@ export default async function PropertyPage({ params }: PageProps) {
                   </div>
                 </div>
               )}
-              {property.bathrooms !== undefined && property.bathrooms > 0 && (
+              {property.bathrooms != null && property.bathrooms > 0 && (
                 <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
                     <Bath className="w-5 h-5 text-green-700" />
@@ -273,31 +260,29 @@ export default async function PropertyPage({ params }: PageProps) {
                   </div>
                 </div>
               )}
-              <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
-                  <Square className="w-5 h-5 text-green-700" />
-                </div>
-                <div className="text-center">
-                  <div className="text-xl sm:text-2xl font-bold leading-none">{property.squareMeters}</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground mt-1">m²</div>
-                </div>
-              </div>
-              {property.propertyType && (
+              {property.squareMeters != null && (
                 <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
-                    <Home className="w-5 h-5 text-green-700" />
+                    <Square className="w-5 h-5 text-green-700" />
                   </div>
                   <div className="text-center">
-                    <div className="text-base sm:text-lg font-bold capitalize leading-none">
-                      {property.propertyType}
-                    </div>
-                    <div className="text-xs sm:text-sm text-muted-foreground mt-1">Tipo</div>
+                    <div className="text-xl sm:text-2xl font-bold leading-none">{property.squareMeters}</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mt-1">m²</div>
                   </div>
                 </div>
               )}
+              <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
+                  <Home className="w-5 h-5 text-green-700" />
+                </div>
+                <div className="text-center">
+                  <div className="text-base sm:text-lg font-bold leading-none">{property.propertyType}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mt-1">Tipo</div>
+                </div>
+              </div>
             </div>
 
-            {/* Descripción */}
+            {/* Descripción: texto plano con saltos de línea */}
             {property.description && (
               <div className="bg-card rounded-2xl border border-border/70 p-5 sm:p-7">
                 <h2 className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
@@ -306,14 +291,14 @@ export default async function PropertyPage({ params }: PageProps) {
                   </span>
                   Descripción
                 </h2>
-                <div className="prose prose-slate max-w-none text-sm sm:text-base leading-relaxed">
-                  <PortableText value={property.description} />
-                </div>
+                <p className="whitespace-pre-line text-sm sm:text-base leading-relaxed text-foreground/90">
+                  {property.description}
+                </p>
               </div>
             )}
 
             {/* Características adicionales */}
-            {property.features && property.features.length > 0 && (
+            {property.features.length > 0 && (
               <div className="bg-card rounded-2xl border border-border/70 p-5 sm:p-7">
                 <h2 className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold mb-4 sm:mb-5">
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50">
@@ -322,13 +307,13 @@ export default async function PropertyPage({ params }: PageProps) {
                   Características adicionales
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  {property.features.map((feature, index) => (
+                  {property.features.map((feature) => (
                     <div
-                      key={index}
+                      key={feature}
                       className="flex items-center gap-2.5 rounded-xl bg-green-50/60 border border-green-600/10 px-3 py-2.5"
                     >
                       <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                      <span className="capitalize text-sm sm:text-base">{feature}</span>
+                      <span className="text-sm sm:text-base">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -336,7 +321,7 @@ export default async function PropertyPage({ params }: PageProps) {
             )}
 
             {/* Ubicación en el mapa */}
-            {property.geoLocation && property.geoLocation.lat && property.geoLocation.lng && (
+            {property.geoLocation && (
               <div className="bg-card rounded-2xl border border-border/70 p-5 sm:p-7">
                 <h2 className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold mb-4">
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50">
@@ -360,7 +345,7 @@ export default async function PropertyPage({ params }: PageProps) {
                   {isAlquiler ? 'Alquiler mensual' : 'Precio de venta'}
                 </p>
                 <p className="text-2xl sm:text-3xl font-bold leading-none">
-                  {formatPrice(property.price)}
+                  {priceText}
                   {isAlquiler && <span className="text-base font-medium text-green-100">/mes</span>}
                 </p>
                 {pricePerM2 && (
@@ -413,8 +398,14 @@ export default async function PropertyPage({ params }: PageProps) {
                   </div>
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-muted-foreground">Tipo</span>
-                    <span className="font-medium capitalize">{property.propertyType}</span>
+                    <span className="font-medium">{property.propertyType}</span>
                   </div>
+                  {details.map((detail) => (
+                    <div key={detail.label} className="flex items-start justify-between gap-3">
+                      <span className="text-muted-foreground">{detail.label}</span>
+                      <span className="font-medium text-right">{detail.value}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -430,7 +421,7 @@ export default async function PropertyPage({ params }: PageProps) {
               {isAlquiler ? 'Alquiler /mes' : 'Precio'}
             </p>
             <p className="text-lg font-bold text-green-700 leading-none truncate">
-              {formatPrice(property.price)}
+              {priceText}
             </p>
           </div>
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
@@ -444,4 +435,3 @@ export default async function PropertyPage({ params }: PageProps) {
     </div>
   )
 }
-
