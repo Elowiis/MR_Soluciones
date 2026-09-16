@@ -13,6 +13,21 @@ const nextConfig: NextConfig = {
         destination: "/propiedades",
         permanent: true,
       },
+      {
+        source: "/default.aspx",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/conocenos.html",
+        destination: "/conocenos",
+        permanent: true,
+      },
+      {
+        source: "/contacto.html",
+        destination: "/#lead-form",
+        permanent: true,
+      },
     ];
   },
   images: {
