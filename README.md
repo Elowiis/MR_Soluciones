@@ -131,3 +131,67 @@ ya no lista, por ejemplo). Con el webhook configurado se purgan todas juntas.
 
 Si el log muestra 401, el secreto del webhook y `SANITY_REVALIDATE_SECRET` no
 coinciden (o falta el redeploy tras añadir la variable).
+
+## Importador de Inmovilla a Supabase
+
+`POST /api/sync` descarga el feed XML diario de Inmovilla y deja la tabla
+`propiedades` de Supabase igual que el XML. Corre en paralelo a Sanity y no
+toca nada de él: por ahora solo llena la base de datos, la web sigue leyendo de
+Sanity.
+
+Código en `lib/inmovilla/`: `parser.ts` (descarga y parseo), `mapper.ts`
+(XML → columnas, traducción de códigos), `sync.ts` (lotes, salvaguarda,
+bajas) y `supabase.ts` (cliente con service role).
+
+### Variables de entorno
+
+Añadir en **Vercel → Settings → Environment Variables** y en `.env.local`:
+
+| Variable | Valor |
+|---|---|
+| `INMOVILLA_XML_URL` | URL del XML. Ahora la del **demo** (`https://procesos.apinmo.com/xml/xml2demo/2-web.xml`); la de producción la facilitará Inmovilla |
+| `SUPABASE_URL` | Supabase → Project Settings → API → *Project URL* |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API → *service_role*. **Solo servidor**: salta el RLS. Nunca con prefijo `NEXT_PUBLIC_` ni importada desde un componente cliente |
+| `SYNC_SECRET` | cadena aleatoria larga (`openssl rand -base64 32`). Sin ella la ruta responde 401 a todo |
+
+### Cómo funciona
+
+El XML no es incremental: cada noche trae el catálogo completo y solo incluye
+propiedades con "Publicar web" + "Libre" en el CRM. Una propiedad vendida o
+despublicada simplemente desaparece del feed.
+
+1. Descarga y parsea el XML (todo como texto: el CP `09007` no se convierte en `9007`).
+2. **Salvaguarda**: si el XML trae menos del 50 % de las propiedades `activa = true`
+   que hay en Supabase, aborta sin escribir nada (409). Protege contra un feed
+   defectuoso que vaciaría el catálogo. `?force=true` la salta: úsalo solo en el
+   primer arranque.
+3. Upsert por lotes de 200 con `activa = true` y `fecha_importacion = now()`.
+   `habitaciones_total` es una columna generada: no se escribe.
+4. Multimedia (`propiedad_fotos`, `propiedad_panoramicas`, `propiedad_videos`):
+   se borran las filas de cada propiedad y se reinsertan.
+5. **Bajas**: toda propiedad de Supabase que no venga en el XML pasa a
+   `activa = false` con `fecha_desaparicion = now()`. **Nunca se borran filas**:
+   si vuelve al feed, se reactiva sola.
+
+Una ficha cuyo `numfotos` no cuadre con sus etiquetas `fotoN` (XML truncado) se
+omite con aviso, pero **no** se da de baja: sigue en el feed.
+
+### Probarlo en local
+
+```bash
+pnpm dev
+
+curl -X POST "http://localhost:3000/api/sync?force=true" \
+  -H "Authorization: Bearer $SYNC_SECRET"
+```
+
+`?force=true` solo la primera vez (tabla vacía). Después, sin parámetro.
+
+Respuestas: `200` con `{ total_xml, upsertadas, omitidas[], desactivadas,
+fotos_insertadas, panoramicas_insertadas, videos_insertados, duracion_ms,
+avisos[] }`; `409` abortado por la salvaguarda (`motivo` lo explica); `401`
+secreto ausente o incorrecto; `405` si no es POST; `500` error inesperado.
+`omitidas` lista las fichas no guardadas como `{ id, motivo }`; `avisos` lista
+códigos no documentados.
+
+El cron de Vercel se configurará después de validar la importación a mano.
