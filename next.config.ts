@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // El cupo de optimización de Vercel no da para las fotos del feed de
+    // Inmovilla (responde 402); se sirven tal cual desde apinmo.com.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
