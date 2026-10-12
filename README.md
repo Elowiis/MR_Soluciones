@@ -190,11 +190,23 @@ curl -X POST "http://localhost:3000/api/sync?force=true" \
 Respuestas: `200` con `{ total_xml, upsertadas, omitidas[], desactivadas,
 fotos_insertadas, panoramicas_insertadas, videos_insertados, duracion_ms,
 avisos[] }`; `409` abortado por la salvaguarda (`motivo` lo explica); `401`
-secreto ausente o incorrecto; `405` si no es POST; `500` error inesperado.
+secreto ausente o incorrecto; `500` error inesperado.
 `omitidas` lista las fichas no guardadas como `{ id, motivo }`; `avisos` lista
 códigos no documentados.
 
-El cron de Vercel se configurará después de validar la importación a mano.
+### Cron diario
+
+`vercel.json` programa `GET /api/sync` a diario a las 05:00 UTC (07:00 en
+verano, 06:00 en invierno en España). Vercel llama con
+`Authorization: Bearer <CRON_SECRET>`; sin esa variable la ruta responde 401.
+El cron nunca usa `force`: si la salvaguarda salta, no escribe nada.
+
+| Variable | Valor |
+|---|---|
+| `CRON_SECRET` | cadena aleatoria larga (`openssl rand -base64 32`), solo en Vercel |
+
+Ejecuciones y logs: Vercel → proyecto → Settings → Cron Jobs. Solo corre en
+producción, no en previews ni en local.
 
 ### La web lee las propiedades de Supabase
 
